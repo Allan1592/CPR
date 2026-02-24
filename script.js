@@ -1,4 +1,4 @@
-const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxRZrjXNUP5r8EOA7uSZp1GDTEeR13U_rzv9-mmRr3vYsFNNb-yDn2kXbY7FHYc20NY/exec"; 
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwb7Z4nNU6RqJktWIB4xGzaUGSLqkI4Rfrag7pvuH1cGge-qndb6MmGYfec-qnwHDzm/exec; 
 
 let empresas = [];
 let funcionarios = [];
