@@ -1,111 +1,92 @@
-// --- CONFIGURAÇÕES INICIAIS ---
+// COLE O URL QUE O GOOGLE GEROU ENTRE AS ASPAS ABAIXO
+const URL_GOOGLE_SCRIPT = "COLE_AQUI_O_URL_DA_IMPLANTACAO";
+
 let empresas = [];
-let funcionarios = []; // Isso virá do Google Sheets
+let funcionarios = [];
 let valorBonusBase = 200.00;
 
-// --- NAVEGAÇÃO ENTRE TELAS ---
-function navegar(idTela) {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
-    document.getElementById(idTela).classList.add('active');
-    
-    if(idTela === 'tela-pagamentos' || idTela === 'tela-bonificados') {
-        calcularTudo();
-    }
-}
-
-// --- GESTÃO DE EMPRESAS ---
-function adicionarEmpresa() {
-    const nome = document.getElementById('empresa-nome').value;
-    const valor = parseFloat(document.getElementById('empresa-valor').value);
-
-    if (nome && valor) {
-        empresas.push({ nome, valor });
+// Função para carregar dados da planilha assim que abrir o site
+async function carregarDadosDaPlanilha() {
+    try {
+        const response = await fetch(URL_GOOGLE_SCRIPT);
+        const data = await response.json();
+        
+        funcionarios = data.funcionarios;
+        empresas = data.empresas;
+        
         atualizarTabelaEmpresas();
-        document.getElementById('empresa-nome').value = '';
-        document.getElementById('empresa-valor').value = '';
+        calcularTudo();
+        console.log("Dados carregados com sucesso!");
+    } catch (error) {
+        console.error("Erro ao carregar dados:", error);
     }
 }
 
-function atualizarTabelaEmpresas() {
-    const tbody = document.querySelector('#tabela-empresas tbody');
-    tbody.innerHTML = '';
-    let total = 0;
+// Chame essa função ao carregar a página
+window.onload = carregarDadosDaPlanilha;
 
-    empresas.forEach(emp => {
-        total += emp.valor;
-        tbody.innerHTML += `<tr><td>${emp.nome}</td><td>R$ ${emp.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>`;
-    });
-
-    document.getElementById('total-arrecadado').innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    document.getElementById('resumo-total').innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-}
-
-// --- LÓGICA DE CÁLCULO DE RATEIO (SEM SOBRAS) ---
+// Modifique a função calcularTudo para usar os dados REAIS da planilha:
 function calcularTudo() {
-    const totalArrecadado = empresas.reduce((acc, emp) => acc + emp.valor, 0);
-    const valorBonus = parseFloat(document.getElementById('valor-bonus-config').value) || 0;
+    const totalArrecadado = empresas.reduce((acc, emp) => acc + (parseFloat(emp.valor) || 0), 0);
+    const valorBonusInput = parseFloat(document.getElementById('valor-bonus-config').value) || 0;
     
-    // Simulação de dados (Substituir pela chamada do Google Sheets)
-    // Exemplo: 250 funcionários, somando 4000 dias
-    const totalDiasTrabalhados = 4000; 
-    const qtdBonificados = 10; // Exemplo de contagem de matriculas com bônus
+    // Soma total de dias de TODOS os funcionários da planilha
+    const totalDiasTrabalhados = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
+    
+    // Conta quantos estão marcados como "Sim" na coluna Bonificados
+    const bonificados = funcionarios.filter(f => f.Bonificados && f.Bonificados.toLowerCase() === 'sim');
+    const qtdBonificados = bonificados.length;
 
-    // 1. Subtrai o total que será pago como bônus fixo
-    const montanteAposBonus = totalArrecadado - (qtdBonificados * valorBonus);
+    // Cálculo exato para sobra zero
+    const montanteParaRateioComum = totalArrecadado - (qtdBonificados * valorBonusInput);
+    const valorDoDia = totalDiasTrabalhados > 0 ? montanteParaRateioComum / totalDiasTrabalhados : 0;
 
-    // 2. Calcula o valor do dia com precisão decimal alta para evitar erro de arredondamento
-    const valorDoDia = totalDiasTrabalhados > 0 ? montanteAposBonus / totalDiasTrabalhados : 0;
-
+    // Atualiza os campos na tela
+    document.getElementById('resumo-total').innerText = `R$ ${totalArrecadado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
     document.getElementById('resumo-dias').innerText = totalDiasTrabalhados;
     document.getElementById('resumo-valor-dia').innerText = `R$ ${valorDoDia.toLocaleString('pt-BR', {minimumFractionDigits: 4})}`;
 
-    renderizarPagamentos(valorDoDia, valorBonus);
+    renderizarPagamentos(valorDoDia, valorBonusInput);
 }
 
+// Atualize a função renderizarPagamentos para usar as colunas exatas da sua planilha
 function renderizarPagamentos(valorDia, valorBonus) {
     const tbody = document.querySelector('#tabela-rateio tbody');
     const tbodyBonif = document.querySelector('#tabela-bonificados-config tbody');
     tbody.innerHTML = '';
     tbodyBonif.innerHTML = '';
 
-    // Exemplo de funcionário para teste da lógica
-    const listaExemplo = [
-        { matricula: '001', nome: 'Funcionario A', setor: 'Produção', dias: 20, bonificado: true },
-        { matricula: '002', nome: 'Funcionario B', setor: 'RH', dias: 18, bonificado: false }
-    ];
+    funcionarios.forEach(f => {
+        const dias = parseFloat(f.Dias) || 0;
+        const eBonificado = f.Bonificados && f.Bonificados.toLowerCase() === 'sim';
+        
+        // Lógica: (Dias * Valor do Dia) + (200 se for bonificado)
+        let valorFinal = (dias * valorDia);
+        if(eBonificado) valorFinal += valorBonus;
 
-    listaExemplo.forEach(f => {
-        // Cálculo individual
-        let valorFinal = f.dias * valorDia;
-        if(f.bonificado) valorFinal += valorBonus;
+        // Formatação de segurança para garantir que o centavo não escape no arredondamento visual
+        const valorFormatado = valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-        // Tela de Pagamento Geral
         tbody.innerHTML += `
             <tr>
-                <td>${f.matricula}</td>
-                <td>${f.nome}</td>
-                <td>${f.setor}</td>
-                <td>${f.dias}</td>
-                <td><strong>R$ ${valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td>
+                <td>${f.Matriculas}</td>
+                <td>${f.Nome}</td>
+                <td>${f.Setor}</td>
+                <td>${dias}</td>
+                <td><strong>R$ ${valorFormatado}</strong></td>
             </tr>
         `;
 
-        // Tela de Bonificados
-        if(f.bonificado) {
+        if(eBonificado) {
             tbodyBonif.innerHTML += `
                 <tr>
-                    <td>${f.matricula}</td>
-                    <td>${f.nome}</td>
-                    <td>${f.setor}</td>
-                    <td>${f.dias}</td>
-                    <td>R$ ${valorBonus}</td>
+                    <td>${f.Matriculas}</td>
+                    <td>${f.Nome}</td>
+                    <td>${f.Setor}</td>
+                    <td>${dias}</td>
+                    <td>R$ ${valorBonus.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
                 </tr>
             `;
         }
     });
-}
-
-// --- EXPORTAÇÃO ---
-function exportarExcel() {
-    alert("Função de exportação para Excel ativada! (Requer biblioteca SheetJS)");
 }
