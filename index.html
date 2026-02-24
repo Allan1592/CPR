@@ -2,77 +2,320 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Rateio Mensal</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Rateio Profissional</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS PROFISSIONAL --- */
+        :root {
+            --verde-grad: linear-gradient(135deg, #2d9344 0%, #1e5e2d 100%);
+            --laranja-grad: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            --azul-grad: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            --bg-body: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .top-bar {
+            text-align: right;
+            padding: 15px 40px;
+            color: #555;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            margin: 0 auto 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .btn-dash {
+            height: 220px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn-dash:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-dash i { font-size: 4rem; margin-bottom: 20px; }
+        .btn-dash span { font-size: 1.6rem; font-weight: bold; }
+
+        .btn-verde { background: var(--verde-grad); }
+        .btn-laranja { background: var(--laranja-grad); }
+        .btn-azul { background: var(--azul-grad); }
+
+        /* Estilo das Telas */
+        .tela { display: none; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .tela.active { display: block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; border-bottom: 2px solid #eee; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+
+        textarea { width: 100%; height: 150px; border-radius: 10px; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; font-family: inherit; }
+        
+        button.voltar { background: #666; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
+        .btn-acao { padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; color: white; margin-right: 5px; }
+    </style>
 </head>
 <body>
-    <header>
+
+    <div class="top-bar" id="data-atual">Fevereiro/2026</div>
+
+    <header id="header-principal">
+        <div class="logo-placeholder">
+            <i class="fa-solid fa-gears fa-3x" style="color: #3498db;"></i>
+        </div>
         <h1>Sistema de Rateio</h1>
-        <span id="mes-atual">Fevereiro/2026</span>
+        <p class="subtitle">gestão de pagamentos eficiente</p>
     </header>
 
-    <section id="tela-menu" class="tela active">
-        <div class="container menu-buttons">
-            <button onclick="navegar('tela-empresas')">Empresas</button>
-            <button onclick="navegar('tela-cadastro')">Funcionários</button>
-            <button onclick="navegar('tela-pagamentos')">Relatório Final</button>
-        </div>
-    </section>
+    <div class="container">
+        
+        <section id="tela-menu" class="tela active" style="background: transparent; box-shadow: none;">
+            <div class="dashboard-grid">
+                <button class="btn-dash btn-verde" onclick="navegar('tela-empresas')">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>Empresas</span>
+                </button>
+                <button class="btn-dash btn-laranja" onclick="navegar('tela-cadastro')">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Funcionários</span>
+                </button>
+                <button class="btn-dash btn-azul" onclick="navegar('tela-pagamentos')">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Relatório Final</span>
+                </button>
+            </div>
+        </section>
 
-    <section id="tela-empresas" class="tela">
-        <div class="container">
-            <button onclick="navegar('tela-menu')">Voltar</button>
+        <section id="tela-empresas" class="tela">
+            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
             <h2>Empresas Contribuintes</h2>
-            <textarea id="colar-empresas" placeholder="Cole aqui: Nome [Tab] Valor"></textarea>
-            <button onclick="importarEmpresas()" style="background:#28a745">Processar Excel</button>
+            <textarea id="colar-empresas" placeholder="Cole aqui as colunas do Excel: Empresa [TAB] Valor"></textarea>
+            <button onclick="importarEmpresas()" style="background:#2d9344; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer;">Processar Dados</button>
             <table id="tabela-empresas">
-                <thead><tr><th>Empresa</th><th>Valor</th><th>Ação</th></tr></thead>
+                <thead><tr><th>Empresa</th><th>Valor</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
-                <tfoot><tr><td><strong>TOTAL</strong></td><td id="total-arrecadado">R$ 0,00</td><td></td></tr></tfoot>
+                <tfoot><tr><td><strong>TOTAL ARRECADADO</strong></td><td id="total-arrecadado" style="font-weight:bold; color:green;">R$ 0,00</td><td></td></tr></tfoot>
             </table>
-        </div>
-    </section>
+        </section>
 
-    <section id="tela-cadastro" class="tela">
-        <div class="container">
-            <button onclick="navegar('tela-menu')">Voltar</button>
+        <section id="tela-cadastro" class="tela">
+            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
             <h2>Base de Funcionários</h2>
-            <textarea id="colar-funcionarios" placeholder="Matrícula [Tab] Nome [Tab] Dias [Tab] Setor [Tab] Bonificado(Sim/Não)"></textarea>
-            <button onclick="importarFuncionarios()" style="background:#28a745">Importar Excel</button>
+            <textarea id="colar-funcionarios" placeholder="Cole aqui: Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bonificado (Sim/Não)"></textarea>
+            <button onclick="importarFuncionarios()" style="background:#2d9344; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer;">Importar Lista</button>
             <table id="tabela-cadastro-lista">
                 <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Bonif.</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
             </table>
-        </div>
-    </section>
+        </section>
 
-    <section id="tela-pagamentos" class="tela">
-        <div class="container">
-            <button onclick="navegar('tela-menu')">Menu</button>
-            <button onclick="navegar('tela-bonificados')">Relatório de Bônus</button>
-            <div class="resumo-cards">
-                <div class="card">Total: <span id="resumo-total"></span></div>
-                <div class="card">Dias: <span id="resumo-dias"></span></div>
-                <div class="card">Valor Dia: <span id="resumo-valor-dia"></span></div>
+        <section id="tela-pagamentos" class="tela">
+            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+            <h2>Relatório de Rateio Dinâmico</h2>
+            <div style="display:flex; gap:20px; margin-bottom:30px;">
+                <div style="flex:1; background:#eee; padding:20px; border-radius:15px; text-align:center;">
+                    <small>Arrecadação</small><br><strong id="resumo-total" style="font-size:1.4rem;">R$ 0,00</strong>
+                </div>
+                <div style="flex:1; background:#eee; padding:20px; border-radius:15px; text-align:center;">
+                    <small>Valor p/ Dia</small><br><strong id="resumo-valor-dia" style="font-size:1.4rem; color:#2980b9;">R$ 0,00</strong>
+                </div>
             </div>
             <table id="tabela-rateio">
-                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Valor Final</th></tr></thead>
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Valor Final</th></tr></thead>
                 <tbody></tbody>
             </table>
-        </div>
-    </section>
+        </section>
 
-    <section id="tela-bonificados" class="tela">
-        <div class="container">
-            <button onclick="navegar('tela-pagamentos')">Voltar</button>
-            <h2>Funcionários Bonificados (R$ 200,00)</h2>
-            <table id="tabela-bonificados">
-                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Bônus</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
+    </div>
 
-    <script src="script.js"></script>
+    <script>
+        /* --- JAVASCRIPT INTEGRADO --- */
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec"; 
+        
+        let empresas = [];
+        let funcionarios = [];
+        const valorBonusBase = 200.00;
+
+        function navegar(idTela) {
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
+            document.getElementById(idTela).classList.add('active');
+            
+            // Esconde o header na tela inicial se quiser mais espaço, ou mantém.
+            if(idTela === 'tela-menu') {
+                document.getElementById('header-principal').style.display = 'block';
+            } else {
+                document.getElementById('header-principal').style.display = 'none';
+            }
+
+            if(idTela === 'tela-pagamentos') calcularTudo();
+        }
+
+        async function carregarDados() {
+            try {
+                const res = await fetch(URL_SCRIPT);
+                const data = await res.json();
+                empresas = data.empresas || [];
+                funcionarios = data.funcionarios || [];
+                renderizarEmpresas();
+                renderizarCadastro();
+            } catch (e) { console.log("Erro ao carregar do Google"); }
+        }
+
+        function importarEmpresas() {
+            const raw = document.getElementById('colar-empresas').value;
+            const linhas = raw.split('\n');
+            linhas.forEach(l => {
+                const c = l.split('\t');
+                if(c.length >= 2) {
+                    let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+                    empresas.push({ nome: c[0].trim(), valor: parseFloat(v) || 0 });
+                }
+            });
+            renderizarEmpresas();
+            salvar('salvarEmpresas', empresas);
+            document.getElementById('colar-empresas').value = '';
+        }
+
+        function renderizarEmpresas() {
+            const tb = document.querySelector('#tabela-empresas tbody');
+            tb.innerHTML = '';
+            let total = 0;
+            empresas.forEach((e, i) => {
+                total += e.valor;
+                tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR')}</td>
+                <td><button onclick="excluirEmpresa(${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
+            });
+            document.getElementById('total-arrecadado').innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits:2});
+        }
+
+        function excluirEmpresa(i) {
+            empresas.splice(i, 1);
+            renderizarEmpresas();
+            salvar('salvarEmpresas', empresas);
+        }
+
+        function importarFuncionarios() {
+            const raw = document.getElementById('colar-funcionarios').value;
+            const linhas = raw.split('\n');
+            linhas.forEach(l => {
+                const c = l.split('\t');
+                if(c.length >= 4) {
+                    funcionarios.push({
+                        Matriculas: c[0].trim(),
+                        Nome: c[1].trim(),
+                        Dias: c[2].trim(),
+                        Setor: c[3].trim(),
+                        Bonificados: (c[4] && c[4].trim().toLowerCase() === 'sim') ? "Sim" : "No"
+                    });
+                }
+            });
+            renderizarCadastro();
+            salvar('salvarTodosFuncionarios', funcionarios);
+            document.getElementById('colar-funcionarios').value = '';
+        }
+
+        function renderizarCadastro() {
+            const tb = document.querySelector('#tabela-cadastro-lista tbody');
+            tb.innerHTML = '';
+            funcionarios.forEach((f, i) => {
+                tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Dias}</td><td>${f.Setor}</td><td>${f.Bonificados}</td>
+                <td><button onclick="excluirFunc(${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
+            });
+        }
+
+        function excluirFunc(i) {
+            funcionarios.splice(i, 1);
+            renderizarCadastro();
+            salvar('salvarTodosFuncionarios', funcionarios);
+        }
+
+        function calcularTudo() {
+            const totalArrecadado = empresas.reduce((acc, e) => acc + e.valor, 0);
+            const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
+            const bonificados = funcionarios.filter(f => f.Bonificados === "Sim").length;
+            
+            const custoBonus = bonificados * valorBonusBase;
+            const liquido = totalArrecadado - custoBonus;
+            const valorDia = totalDias > 0 ? liquido / totalDias : 0;
+
+            document.getElementById('resumo-total').innerText = "R$ " + totalArrecadado.toLocaleString('pt-BR');
+            document.getElementById('resumo-valor-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR', {minimumFractionDigits:4});
+
+            const tb = document.querySelector('#tabela-rateio tbody');
+            tb.innerHTML = '';
+            funcionarios.forEach(f => {
+                const dias = parseFloat(f.Dias) || 0;
+                const bonus = f.Bonificados === "Sim" ? valorBonusBase : 0;
+                const total = (dias * valorDia) + bonus;
+                tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${dias}</td><td>${f.Setor}</td><td><strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></td></tr>`;
+            });
+        }
+
+        async function salvar(acao, dados) {
+            fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) });
+        }
+
+        window.onload = carregarDados;
+    </script>
 </body>
 </html>
