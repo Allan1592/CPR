@@ -1,11 +1,12 @@
-const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwb7Z4nNU6RqJktWIB4xGzaUGSLqkI4Rfrag7pvuH1cGge-qndb6MmGYfec-qnwHDzm/exec"; 
+const URL_GOOGLE_SCRIPT = "COLE_AQUI_SEU_URL"; 
 
 let empresas = [];
 let funcionarios = [];
 const valorBonusBase = 200.00;
 
-// --- FUNÇÃO DE NAVEGAÇÃO ---
+// Função de Navegação - AGORA COM TESTE DE ERRO
 function navegar(idTela) {
+    console.log("Tentando abrir a tela: " + idTela);
     const telas = document.querySelectorAll('.tela');
     telas.forEach(t => {
         t.style.display = 'none';
@@ -16,16 +17,18 @@ function navegar(idTela) {
     if (telaDestino) {
         telaDestino.style.display = 'block';
         telaDestino.classList.add('active');
+        console.log("Tela " + idTela + " ativada.");
+    } else {
+        console.error("Erro: A tela " + idTela + " não existe no HTML.");
     }
 
-    if(idTela === 'tela-pagamentos') {
+    if(idTela === 'tela-pagamentos' || idTela === 'tela-bonificados') {
         calcularTudo();
     }
 }
 
-// --- BUSCA INICIAL ---
+// Carregar dados ao abrir
 async function carregarDadosIniciais() {
-    if (URL_GOOGLE_SCRIPT.includes("COLE_AQUI")) return;
     try {
         const response = await fetch(URL_GOOGLE_SCRIPT);
         const data = await response.json();
@@ -36,30 +39,16 @@ async function carregarDadosIniciais() {
             renderizarCadastro();
         }
     } catch (e) {
-        console.error("Erro na carga inicial:", e);
+        console.log("Aguardando configuração de URL...");
     }
 }
 
-// --- IMPORTAÇÕES ---
-function importarEmpresas() {
-    const raw = document.getElementById('colar-empresas').value;
-    const linhas = raw.split('\n');
-    empresas = [];
-    linhas.forEach(linha => {
-        const colunas = linha.split('\t');
-        if(colunas.length >= 2) {
-            let v = colunas[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-            empresas.push({ nome: colunas[0].trim(), valor: parseFloat(v) || 0 });
-        }
-    });
-    atualizarTabelaEmpresas();
-    salvarNoGoogle('salvarEmpresas', empresas);
-}
-
+// Importar Funcionários e reconhecer Bonificados
 function importarFuncionarios() {
     const raw = document.getElementById('colar-funcionarios').value;
     const linhas = raw.split('\n');
     funcionarios = [];
+    
     linhas.forEach(linha => {
         const cols = linha.split('\t');
         if(cols.length >= 4) {
@@ -68,51 +57,80 @@ function importarFuncionarios() {
                 Nome: cols[1].trim(),
                 Dias: cols[2].trim(),
                 Setor: cols[3].trim(),
-                Bonificados: cols[4] ? cols[4].trim() : "Não"
+                // Se a 5ª coluna for "Sim", ele vira bonificado
+                Bonificados: (cols[4] && cols[4].trim().toLowerCase() === 'sim') ? "Sim" : "No"
             });
         }
     });
     renderizarCadastro();
     salvarNoGoogle('salvarTodosFuncionarios', funcionarios);
+    alert(funcionarios.length + " funcionários importados!");
 }
 
-// --- CÁLCULOS ---
+// CÁLCULO DE RATEIO (O CORAÇÃO DO SISTEMA)
 function calcularTudo() {
+    // 1. Soma quanto as empresas pagaram
     const totalArrecadado = empresas.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
-    const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
-    const bonificados = funcionarios.filter(f => f.Bonificados && f.Bonificados.toLowerCase() === 'sim');
     
-    const custoBonus = bonificados.length * valorBonusBase;
-    const montanteRestante = totalArrecadado - custoBonus;
-    const valorDia = totalDias > 0 ? montanteRestante / totalDias : 0;
+    // 2. Soma o total de dias trabalhados por todos
+    const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
+    
+    // 3. Filtra quem é bonificado (Sim)
+    const bonificados = funcionarios.filter(f => f.Bonificados === "Sim");
+    
+    // 4. Calcula o custo total dos bônus (Ex: 10 pessoas * 200 = 2000)
+    const custoTotalBonus = bonificados.length * valorBonusBase;
+    
+    // 5. O que sobra é dividido pelos dias
+    const montanteParaRateio = totalArrecadado - custoTotalBonus;
+    const valorDia = totalDias > 0 ? montanteParaRateio / totalDias : 0;
 
+    // Atualiza o painel superior
     document.getElementById('resumo-total').innerText = "R$ " + totalArrecadado.toLocaleString('pt-BR', {minimumFractionDigits: 2});
     document.getElementById('resumo-dias').innerText = totalDias;
     document.getElementById('resumo-valor-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR', {minimumFractionDigits: 4});
 
-    const tbody = document.querySelector('#tabela-rateio tbody');
-    if(!tbody) return;
-    tbody.innerHTML = '';
+    renderizarTabelasFinais(valorDia);
+}
+
+function renderizarTabelasFinais(valorDia) {
+    const tbodyRateio = document.querySelector('#tabela-rateio tbody');
+    const tbodyBonif = document.querySelector('#tabela-bonificados tbody');
+    
+    tbodyRateio.innerHTML = '';
+    tbodyBonif.innerHTML = '';
 
     funcionarios.forEach(f => {
         const dias = parseFloat(f.Dias) || 0;
-        const eBonif = f.Bonificados && f.Bonificados.toLowerCase() === 'sim';
+        const eBonif = f.Bonificados === "Sim";
+        
+        // Valor = (Dias * Valor do Dia) + (Bônus se for o caso)
         const valorFinal = (dias * valorDia) + (eBonif ? valorBonusBase : 0);
 
-        tbody.innerHTML += `<tr>
+        tbodyRateio.innerHTML += `<tr>
             <td>${f.Matriculas}</td>
             <td>${f.Nome}</td>
             <td>${f.Setor}</td>
             <td>${dias}</td>
             <td><strong>R$ ${valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td>
         </tr>`;
+
+        if(eBonif) {
+            tbodyBonif.innerHTML += `<tr>
+                <td>${f.Matriculas}</td>
+                <td>${f.Nome}</td>
+                <td>${f.Setor}</td>
+                <td>${dias}</td>
+                <td>R$ ${valorBonusBase.toLocaleString('pt-BR')}</td>
+            </tr>`;
+        }
     });
 }
 
+// Funções de apoio
 function atualizarTabelaEmpresas() {
     const tb = document.querySelector('#tabela-empresas tbody');
-    if(!tb) return;
-    tb.innerHTML = '';
+    if(!tb) return; tb.innerHTML = '';
     let t = 0;
     empresas.forEach(e => {
         t += e.valor;
@@ -123,23 +141,17 @@ function atualizarTabelaEmpresas() {
 
 function renderizarCadastro() {
     const tb = document.querySelector('#tabela-cadastro-lista tbody');
-    if(!tb) return;
-    tb.innerHTML = '';
+    if(!tb) return; tb.innerHTML = '';
     funcionarios.forEach(f => {
         tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Dias}</td><td>${f.Setor}</td><td>${f.Bonificados}</td><td>-</td></tr>`;
     });
 }
 
 async function salvarNoGoogle(acao, dados) {
+    if (URL_GOOGLE_SCRIPT.includes("COLE_AQUI")) return;
     try {
         await fetch(URL_GOOGLE_SCRIPT, { method: 'POST', body: JSON.stringify({ acao, dados }) });
-        alert("Sincronizado!");
-    } catch (e) { console.error(e); }
-}
-
-function exportarExcel() {
-    const wb = XLSX.utils.table_to_book(document.getElementById("tabela-rateio"));
-    XLSX.writeFile(wb, "Rateio.xlsx");
+    } catch (e) { console.error("Erro ao sincronizar"); }
 }
 
 window.onload = () => {
