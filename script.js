@@ -1,92 +1,133 @@
-// COLE O URL QUE O GOOGLE GEROU ENTRE AS ASPAS ABAIXO
-const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxRZrjXNUP5r8EOA7uSZp1GDTEeR13U_rzv9-mmRr3vYsFNNb-yDn2kXbY7FHYc20NY/exec";
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxRZrjXNUP5r8EOA7uSZp1GDTEeR13U_rzv9-mmRr3vYsFNNb-yDn2kXbY7FHYc20NY/exec"; 
 
 let empresas = [];
 let funcionarios = [];
 let valorBonusBase = 200.00;
 
-// Função para carregar dados da planilha assim que abrir o site
-async function carregarDadosDaPlanilha() {
-    try {
-        const response = await fetch(URL_GOOGLE_SCRIPT);
-        const data = await response.json();
-        
-        funcionarios = data.funcionarios;
-        empresas = data.empresas;
-        
-        atualizarTabelaEmpresas();
-        calcularTudo();
-        console.log("Dados carregados com sucesso!");
-    } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-    }
+function navegar(id) {
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'tela-pagamentos') calcularTudo();
 }
 
-// Chame essa função ao carregar a página
-window.onload = carregarDadosDaPlanilha;
+// --- IMPORTAÇÃO VIA "COPIAR E COLAR" ---
+function importarEmpresas() {
+    const raw = document.getElementById('colar-empresas').value;
+    const linhas = raw.split('\n');
+    empresas = [];
 
-// Modifique a função calcularTudo para usar os dados REAIS da planilha:
+    linhas.forEach(linha => {
+        const colunas = linha.split('\t');
+        if(colunas.length >= 2) {
+            empresas.push({
+                nome: colunas[0].trim(),
+                valor: parseFloat(colunas[1].replace('R$', '').replace('.', '').replace(',', '.')) || 0
+            });
+        }
+    });
+    atualizarTabelaEmpresas();
+    salvarNoGoogle('salvarEmpresas', empresas);
+}
+
+function importarFuncionarios() {
+    const raw = document.getElementById('colar-funcionarios').value;
+    const linhas = raw.split('\n');
+    let novosFuncs = [];
+
+    linhas.forEach(linha => {
+        const cols = linha.split('\t');
+        if(cols.length >= 4) {
+            novosFuncs.push({
+                Matriculas: cols[0].trim(),
+                Nome: cols[1].trim(),
+                Dias: cols[2].trim(),
+                Setor: cols[3].trim(),
+                Bonificados: cols[4] ? cols[4].trim() : "Não"
+            });
+        }
+    });
+    funcionarios = novosFuncs;
+    renderizarCadastro();
+    salvarNoGoogle('salvarTodosFuncionarios', funcionarios);
+}
+
+// --- CÁLCULO DE RATEIO (SOBRA ZERO) ---
 function calcularTudo() {
-    const totalArrecadado = empresas.reduce((acc, emp) => acc + (parseFloat(emp.valor) || 0), 0);
-    const valorBonusInput = parseFloat(document.getElementById('valor-bonus-config').value) || 0;
+    const totalArrecadado = empresas.reduce((acc, e) => acc + e.valor, 0);
+    const listaBonificados = funcionarios.filter(f => f.Bonificados.toLowerCase() === 'sim');
+    const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
     
-    // Soma total de dias de TODOS os funcionários da planilha
-    const totalDiasTrabalhados = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
+    const custoBonus = listaBonificados.length * valorBonusBase;
+    const montanteComum = totalArrecadado - custoBonus;
     
-    // Conta quantos estão marcados como "Sim" na coluna Bonificados
-    const bonificados = funcionarios.filter(f => f.Bonificados && f.Bonificados.toLowerCase() === 'sim');
-    const qtdBonificados = bonificados.length;
+    const valorDia = totalDias > 0 ? montanteComum / totalDias : 0;
 
-    // Cálculo exato para sobra zero
-    const montanteParaRateioComum = totalArrecadado - (qtdBonificados * valorBonusInput);
-    const valorDoDia = totalDiasTrabalhados > 0 ? montanteParaRateioComum / totalDiasTrabalhados : 0;
+    // UI Updates
+    document.getElementById('resumo-total').innerText = `R$ ${totalArrecadado.toLocaleString('pt-BR')}`;
+    document.getElementById('resumo-dias').innerText = totalDias;
+    document.getElementById('resumo-valor-dia').innerText = `R$ ${valorDia.toLocaleString('pt-BR', {minimumFractionDigits: 4})}`;
 
-    // Atualiza os campos na tela
-    document.getElementById('resumo-total').innerText = `R$ ${totalArrecadado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    document.getElementById('resumo-dias').innerText = totalDiasTrabalhados;
-    document.getElementById('resumo-valor-dia').innerText = `R$ ${valorDoDia.toLocaleString('pt-BR', {minimumFractionDigits: 4})}`;
-
-    renderizarPagamentos(valorDoDia, valorBonusInput);
+    renderizarRelatorios(valorDia);
 }
 
-// Atualize a função renderizarPagamentos para usar as colunas exatas da sua planilha
-function renderizarPagamentos(valorDia, valorBonus) {
-    const tbody = document.querySelector('#tabela-rateio tbody');
-    const tbodyBonif = document.querySelector('#tabela-bonificados-config tbody');
-    tbody.innerHTML = '';
+function renderizarRelatorios(valorDia) {
+    const tbodyRateio = document.querySelector('#tabela-rateio tbody');
+    const tbodyBonif = document.querySelector('#tabela-bonificados tbody');
+    tbodyRateio.innerHTML = '';
     tbodyBonif.innerHTML = '';
 
     funcionarios.forEach(f => {
         const dias = parseFloat(f.Dias) || 0;
-        const eBonificado = f.Bonificados && f.Bonificados.toLowerCase() === 'sim';
-        
-        // Lógica: (Dias * Valor do Dia) + (200 se for bonificado)
-        let valorFinal = (dias * valorDia);
-        if(eBonificado) valorFinal += valorBonus;
+        const eBonif = f.Bonificados.toLowerCase() === 'sim';
+        const valorFinal = (dias * valorDia) + (eBonif ? valorBonusBase : 0);
 
-        // Formatação de segurança para garantir que o centavo não escape no arredondamento visual
-        const valorFormatado = valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        tbodyRateio.innerHTML += `<tr>
+            <td>${f.Matriculas}</td>
+            <td>${f.Nome}</td>
+            <td>${f.Setor}</td>
+            <td>${dias}</td>
+            <td><strong>R$ ${valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td>
+        </tr>`;
 
-        tbody.innerHTML += `
-            <tr>
-                <td>${f.Matriculas}</td>
-                <td>${f.Nome}</td>
-                <td>${f.Setor}</td>
-                <td>${dias}</td>
-                <td><strong>R$ ${valorFormatado}</strong></td>
-            </tr>
-        `;
-
-        if(eBonificado) {
-            tbodyBonif.innerHTML += `
-                <tr>
-                    <td>${f.Matriculas}</td>
-                    <td>${f.Nome}</td>
-                    <td>${f.Setor}</td>
-                    <td>${dias}</td>
-                    <td>R$ ${valorBonus.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                </tr>
-            `;
+        if(eBonif) {
+            tbodyBonif.innerHTML += `<tr>
+                <td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Setor}</td><td>${dias}</td><td>R$ ${valorBonusBase}</td>
+            </tr>`;
         }
     });
+}
+
+// --- PERSISTÊNCIA ---
+async function salvarNoGoogle(acao, dados) {
+    try {
+        await fetch(URL_GOOGLE_SCRIPT, {
+            method: 'POST',
+            body: JSON.stringify({ acao: acao, dados: dados })
+        });
+        alert("Sincronizado com Google Sheets!");
+    } catch (e) { alert("Erro ao salvar."); }
+}
+
+function atualizarTabelaEmpresas() {
+    const tbody = document.querySelector('#tabela-empresas tbody');
+    tbody.innerHTML = '';
+    let total = 0;
+    empresas.forEach(e => {
+        total += e.valor;
+        tbody.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR')}</td><td><button>X</button></td></tr>`;
+    });
+    document.getElementById('total-arrecadado').innerText = `R$ ${total.toLocaleString('pt-BR')}`;
+}
+
+function renderizarCadastro() {
+    const tbody = document.querySelector('#tabela-cadastro-lista tbody');
+    tbody.innerHTML = '';
+    funcionarios.forEach(f => {
+        tbody.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Dias}</td><td>${f.Setor}</td><td>${f.Bonificados}</td><td><button>Remover</button></td></tr>`;
+    });
+}
+
+function exportarExcel() {
+    const wb = XLSX.utils.table_to_book(document.getElementById("tabela-rateio"));
+    XLSX.writeFile(wb, "Relatorio_Rateio.xlsx");
 }
