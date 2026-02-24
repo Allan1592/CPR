@@ -1,5 +1,5 @@
 // COLE O URL QUE O GOOGLE GEROU ENTRE AS ASPAS ABAIXO
-const URL_GOOGLE_SCRIPT = "COLE_AQUI_O_URL_DA_IMPLANTACAO";
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxRZrjXNUP5r8EOA7uSZp1GDTEeR13U_rzv9-mmRr3vYsFNNb-yDn2kXbY7FHYc20NY/exec";
 
 let empresas = [];
 let funcionarios = [];
