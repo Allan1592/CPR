@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rateio Profissional v2.2</title>
-    
+    <title>Sistema de Rateio v2.3 - Final</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,102 +11,71 @@
 
     <style>
         :root {
-            --verde-grad: linear-gradient(135deg, #2d9344 0%, #1e5e2d 100%);
-            --laranja-grad: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
-            --azul-grad: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            --bg-body: #f4f7f6;
+            --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f;
         }
-
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #333; }
-        .top-bar { text-align: right; padding: 10px 40px; background: #fff; font-weight: bold; border-bottom: 1px solid #ddd; font-size: 0.9rem; }
-        header { text-align: center; padding: 15px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
-        
-        /* Dashboard */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .btn-dash { height: 160px; border: none; border-radius: 15px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn-dash:hover { transform: translateY(-5px); }
-        .btn-dash i { font-size: 2.5rem; margin-bottom: 10px; }
-        .btn-dash span { font-size: 1.2rem; font-weight: bold; }
-        .btn-verde { background: var(--verde-grad); }
-        .btn-laranja { background: var(--laranja-grad); }
-        .btn-azul { background: var(--azul-grad); }
-
-        /* Telas e Tabelas */
-        .tela { display: none; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 10px; }
+        .tela { display: none; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .active { display: block; }
         
-        textarea { width: 100%; height: 50px; border-radius: 6px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; resize: none; font-size: 0.85rem; }
-        input.busca { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 15px; }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; }
-        td { padding: 5px 10px; border-bottom: 1px solid #eee; height: 28px; }
-        
-        .btn-acao { padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; color: white; font-size: 0.75rem; }
-        .btn-export { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; color: white; font-size: 0.8rem; margin-left: 5px;}
-        
-        .resumo-card { background: #fff; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
-        .resumo-card b { font-size: 1.2rem; color: #2c3e50; }
+        /* Dashboard */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .btn-dash { height: 150px; border: none; border-radius: 15px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.1rem; }
+        .btn-dash:hover { transform: translateY(-5px); opacity: 0.9; }
 
-        /* Modal */
-        #modal-edicao { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; justify-content:center; align-items:center; }
-        .modal-content { background:white; padding:20px; border-radius:10px; width:320px; }
+        /* Tabelas e Inputs */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        th { background: #f8f9fa; padding: 10px; border-bottom: 2px solid #ddd; text-align: left; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        textarea { width: 100%; height: 60px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; padding: 8px; }
+        
+        .btn-std { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .resumo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .card { background: #fff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd; }
+        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">Fevereiro/2026</div>
-
-    <header id="header-principal">
-        <div style="font-size: 2.5rem; color: #3498db; margin-bottom: 5px;"><i class="fa-solid fa-gears"></i></div>
-        <h1 style="margin:0; font-size: 1.8rem;">Sistema de Rateio</h1>
-        <p style="color:#666; margin:5px 0;">gestão de pagamentos eficiente</p>
+    <header id="header-main">
+        <h1>Sistema de Rateio</h1>
+        <p>Controle de Arrecadação e Pagamentos</p>
     </header>
 
     <div class="container">
-        <section id="tela-menu" class="tela active" style="background:transparent; box-shadow:none;">
+        <section id="tela-menu" class="tela active" style="background:none; box-shadow:none;">
             <div class="dashboard-grid">
-                <button class="btn-dash btn-verde" onclick="navegar('tela-empresas')"><i class="fa-solid fa-building"></i><span>Empresas</span></button>
-                <button class="btn-dash btn-laranja" onclick="navegar('tela-cadastro')"><i class="fa-solid fa-users"></i><span>Funcionários</span></button>
-                <button class="btn-dash btn-azul" onclick="navegar('tela-pagamentos')"><i class="fa-solid fa-file-invoice-dollar"></i><span>Relatório Final</span></button>
+                <button class="btn-dash" style="background:var(--verde)" onclick="navegar('tela-empresas')"><i class="fa fa-building fa-2x"></i><br>Empresas</button>
+                <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')"><i class="fa fa-users fa-2x"></i><br>Funcionários</button>
+                <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')"><i class="fa fa-file-invoice-dollar fa-2x"></i><br>Relatório Final</button>
             </div>
         </section>
 
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')">← Voltar</button>
-            <h3>Arrecadação de Empresas</h3>
-            <textarea id="colar-empresas" placeholder="Empresa [TAB] Valor"></textarea>
-            <button onclick="importarEmpresas()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px;">Processar</button>
-            
-            <div style="display:flex; justify-content: space-between; margin-top:15px;">
-                <input type="text" class="busca" style="width:50%" placeholder="Filtrar empresa..." onkeyup="filtrar('tabela-empresas', this.value)">
-                <div>
-                    <button onclick="exportarExcel('tabela-empresas', 'Empresas')" class="btn-export" style="background:#1d6f42;">Excel</button>
-                    <button onclick="exportarPDF('tabela-empresas', 'Empresas')" class="btn-export" style="background:#d32f2f;">PDF</button>
-                </div>
+            <h3>Gerenciar Empresas</h3>
+            <textarea id="txt-empresas" placeholder="Cole do Excel: Empresa [TAB] Valor"></textarea>
+            <div style="margin-bottom:15px;">
+                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Importar Dados</button>
+                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho); margin-left:10px;">Limpar Planilha</button>
             </div>
-            <table id="tabela-empresas">
+            <table id="tab-empresas">
                 <thead><tr><th>Empresa</th><th>Valor</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
-                <tfoot><tr><td align="right"><b>TOTAL:</b></td><td id="total-arrecadado" style="color:green; font-weight:bold;">R$ 0,00</td><td></td></tr></tfoot>
+                <tfoot><tr><td align="right"><b>TOTAL:</b></td><td id="total-emp" style="font-weight:bold; color:green;">R$ 0,00</td><td></td></tr></tfoot>
             </table>
         </section>
 
         <section id="tela-cadastro" class="tela">
             <button onclick="navegar('tela-menu')">← Voltar</button>
-            <h3>Cadastro de Funcionários</h3>
-            <textarea id="colar-funcionarios" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
-            <button onclick="importarFuncionarios()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px;">Processar</button>
-            
-            <div style="display:flex; justify-content: space-between; margin-top:15px;">
-                <input type="text" class="busca" style="width:50%" placeholder="Filtrar funcionário..." onkeyup="filtrar('tabela-cadastro-lista', this.value)">
-                <div>
-                    <button onclick="exportarExcel('tabela-cadastro-lista', 'Funcionarios')" class="btn-export" style="background:#1d6f42;">Excel</button>
-                    <button onclick="exportarPDF('tabela-cadastro-lista', 'Funcionarios')" class="btn-export" style="background:#d32f2f;">PDF</button>
-                </div>
+            <h3>Gerenciar Funcionários</h3>
+            <textarea id="txt-funcs" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
+            <div style="margin-bottom:15px;">
+                <button onclick="importar('func')" class="btn-std" style="background:var(--verde)">Importar Dados</button>
+                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho); margin-left:10px;">Limpar Planilha</button>
             </div>
-            <table id="tabela-cadastro-lista">
+            <table id="tab-funcs">
                 <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Bônus</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
             </table>
@@ -115,197 +83,130 @@
 
         <section id="tela-pagamentos" class="tela">
             <button onclick="navegar('tela-menu')">← Voltar</button>
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin:15px 0;">
-                <div class="resumo-card"><small>Funcionários</small><br><b id="resumo-qtd">0</b></div>
-                <div class="resumo-card"><small>Total de Dias</small><br><b id="resumo-dias">0</b></div>
-                <div class="resumo-card"><small>Valor por Dia</small><br><b id="resumo-v-dia">R$ 0,00</b></div>
+            <h3>Relatório de Rateio - Fevereiro/2026</h3>
+            <div class="resumo-grid">
+                <div class="card">Funcionários<br><b id="res-qtd">0</b></div>
+                <div class="card">Total de Dias<br><b id="res-dias">0</b></div>
+                <div class="card">Valor do Dia<br><b id="res-vdia">R$ 0,00</b></div>
             </div>
             <div style="text-align:right; margin-bottom:10px;">
-                <button onclick="exportarExcel('tabela-rateio', 'Rateio_Final')" class="btn-export" style="background:#1d6f42;">Excel</button>
-                <button onclick="exportarPDF('tabela-rateio', 'Rateio_Final')" class="btn-export" style="background:#d32f2f;">PDF</button>
+                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
             </div>
-            <table id="tabela-rateio">
-                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Bônus</th><th>Valor Final</th></tr></thead>
+            <table id="tab-rateio">
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Bônus</th><th>Total a Receber</th></tr></thead>
                 <tbody></tbody>
             </table>
         </section>
     </div>
 
-    <div id="modal-edicao">
-        <div class="modal-content">
-            <h3 id="titulo-modal">Editar</h3>
-            <div id="corpo-modal" style="display:flex; flex-direction:column; gap:10px;"></div>
-            <div style="margin-top:20px; text-align:right;">
-                <button onclick="salvarEdicao()" style="background:#28a745; color:white; border:none; padding:8px 12px; border-radius:4px;">Salvar</button>
-                <button onclick="fecharModal()" style="background:#666; color:white; border:none; padding:8px 12px; border-radius:4px;">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
+        // COLE O SEU URL DO GOOGLE AQUI:
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec";
-        let empresas = [], funcionarios = [], idEditando = null, tipoEditando = '';
+        
+        let empresas = [], funcionarios = [];
 
         function navegar(id) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.getElementById('header-principal').style.display = (id === 'tela-menu' ? 'block' : 'none');
-            if(id === 'tela-pagamentos') calcularTudo();
+            document.getElementById('header-main').style.display = (id === 'tela-menu' ? 'block' : 'none');
+            if(id === 'tela-pagamentos') calcular();
         }
 
-        // --- EMPRESAS ---
-        function importarEmpresas() {
-            const txt = document.getElementById('colar-empresas').value.trim();
-            if(!txt) return;
-            txt.split('\n').forEach(l => {
-                const c = l.split('\t');
-                if(c.length >= 2) {
+        function importar(tipo) {
+            const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
+            if(!txt) return alert("Cole os dados primeiro!");
+            
+            txt.split('\n').forEach(linha => {
+                const c = linha.split('\t');
+                if(tipo === 'emp' && c.length >= 2) {
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
                     empresas.push({ nome: c[0].trim(), valor: parseFloat(v) || 0 });
-                }
-            });
-            renderEmpresas(); salvarRemoto('salvarEmpresas', empresas);
-            document.getElementById('colar-empresas').value = '';
-        }
-
-        function renderEmpresas() {
-            const tb = document.querySelector('#tabela-empresas tbody');
-            tb.innerHTML = ''; let t = 0;
-            empresas.forEach((e, i) => {
-                t += e.valor;
-                tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
-                <td><button onclick="abrirEdicao('emp',${i})" class="btn-acao" style="background:#f0ad4e">Editar</button>
-                <button onclick="excluir('emp',${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
-            });
-            document.getElementById('total-arrecadado').innerText = "R$ " + t.toLocaleString('pt-BR',{minimumFractionDigits:2});
-        }
-
-        // --- FUNCIONÁRIOS ---
-        function importarFuncionarios() {
-            const txt = document.getElementById('colar-funcionarios').value.trim();
-            if(!txt) return;
-            txt.split('\n').forEach(l => {
-                const c = l.split('\t');
-                if(c.length >= 4) {
+                } else if(tipo === 'func' && c.length >= 4) {
                     funcionarios.push({
-                        matricula: c[0].trim(),
-                        nome: c[1].trim(),
-                        dias: parseFloat(c[2].trim()) || 0,
-                        setor: c[3].trim(),
+                        matricula: c[0].trim(), nome: c[1].trim(),
+                        dias: parseFloat(c[2]) || 0, setor: c[3].trim(),
                         bonus: (c[4] && c[4].toLowerCase().includes('sim')) ? 'Sim' : 'Não'
                     });
                 }
             });
-            renderFuncs(); salvarRemoto('salvarTodosFuncionarios', funcionarios);
-            document.getElementById('colar-funcionarios').value = '';
+            
+            if(tipo === 'emp') { renderEmp(); salvar('salvarEmpresas', empresas); }
+            else { renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value = '';
         }
 
-        function renderFuncs() {
-            const tb = document.querySelector('#tabela-cadastro-lista tbody');
+        function renderEmp() {
+            const tb = document.querySelector('#tab-empresas tbody');
+            tb.innerHTML = ''; let total = 0;
+            empresas.forEach((e, i) => {
+                total += e.valor;
+                tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+                <td><button onclick="excluir('emp',${i})" style="color:red; border:none; background:none; cursor:pointer;">Excluir</button></td></tr>`;
+            });
+            document.getElementById('total-emp').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+        }
+
+        function renderFunc() {
+            const tb = document.querySelector('#tab-funcs tbody');
             tb.innerHTML = '';
             funcionarios.forEach((f, i) => {
                 tb.innerHTML += `<tr><td>${f.matricula}</td><td>${f.nome}</td><td>${f.dias}</td><td>${f.setor}</td><td>${f.bonus}</td>
-                <td><button onclick="abrirEdicao('func',${i})" class="btn-acao" style="background:#f0ad4e">Editar</button>
-                <button onclick="excluir('func',${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
+                <td><button onclick="excluir('func',${i})" style="color:red; border:none; background:none; cursor:pointer;">Excluir</button></td></tr>`;
             });
         }
 
-        // --- LÓGICA DE RATEIO ---
-        function calcularTudo() {
-            const totalArrecadado = empresas.reduce((a, b) => a + b.valor, 0);
+        function calcular() {
+            const arrecadado = empresas.reduce((a, b) => a + b.valor, 0);
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const qtdBonus = funcionarios.filter(f => f.bonus === 'Sim').length;
             
-            const custoBonus = qtdBonus * 200;
-            const saldoParaDias = totalArrecadado - custoBonus;
-            const valorDia = totalDias > 0 ? saldoParaDias / totalDias : 0;
+            const valorDia = totalDias > 0 ? (arrecadado - (qtdBonus * 200)) / totalDias : 0;
+            
+            document.getElementById('res-qtd').innerText = funcionarios.length;
+            document.getElementById('res-dias').innerText = totalDias;
+            document.getElementById('res-vdia').innerText = "R$ " + valorDia.toLocaleString('pt-BR',{minimumFractionDigits:4});
 
-            document.getElementById('resumo-qtd').innerText = funcionarios.length;
-            document.getElementById('resumo-dias').innerText = totalDias;
-            document.getElementById('resumo-v-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR', {minimumFractionDigits:4});
-
-            const tb = document.querySelector('#tabela-rateio tbody');
+            const tb = document.querySelector('#tab-rateio tbody');
             tb.innerHTML = '';
             funcionarios.forEach(f => {
-                const vDias = f.dias * valorDia;
-                const vBonus = f.bonus === 'Sim' ? 200 : 0;
-                const total = vDias + vBonus;
-                tb.innerHTML += `<tr><td>${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td>${f.dias}</td><td>R$ ${vBonus}</td><td><b>R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b></td></tr>`;
+                const total = (f.dias * valorDia) + (f.bonus === 'Sim' ? 200 : 0);
+                tb.innerHTML += `<tr><td>${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td>${f.dias}</td><td>${f.bonus === 'Sim' ? 'R$ 200' : '-'}</td><td><b>R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b></td></tr>`;
             });
         }
 
-        // --- EDITAR / EXCLUIR ---
-        function abrirEdicao(tipo, i) {
-            tipoEditando = tipo; idEditando = i;
-            const corpo = document.getElementById('corpo-modal');
-            if(tipo === 'emp') {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
-            } else {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
-            }
-            document.getElementById('modal-edicao').style.display = 'flex';
+        async function limparRemoto(acao) {
+            if(!confirm("Isso apagará permanentemente os dados da planilha. Confirma?")) return;
+            if(acao === 'limparEmpresas') { empresas = []; renderEmp(); } else { funcionarios = []; renderFunc(); }
+            await salvar(acao, []);
+            alert("Planilha limpa!");
         }
-
-        function salvarEdicao() {
-            if(tipoEditando === 'emp') {
-                empresas[idEditando].nome = document.getElementById('ed-1').value;
-                empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0;
-                renderEmpresas(); salvarRemoto('salvarEmpresas', empresas);
-            } else {
-                funcionarios[idEditando].nome = document.getElementById('ed-1').value;
-                funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0;
-                funcionarios[idEditando].setor = document.getElementById('ed-3').value;
-                funcionarios[idEditando].bonus = document.getElementById('ed-4').value;
-                renderFuncs(); salvarRemoto('salvarTodosFuncionarios', funcionarios);
-            }
-            fecharModal();
-        }
-
-        function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
 
         function excluir(tipo, i) {
-            if(!confirm("Excluir registro?")) return;
-            if(tipo === 'emp') { empresas.splice(i,1); renderEmpresas(); salvarRemoto('salvarEmpresas', empresas); }
-            else { funcionarios.splice(i,1); renderFuncs(); salvarRemoto('salvarTodosFuncionarios', funcionarios); }
+            if(tipo === 'emp') { empresas.splice(i,1); renderEmp(); salvar('salvarEmpresas', empresas); }
+            else { funcionarios.splice(i,1); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
         }
 
-        // --- UTILITÁRIOS ---
-        function filtrar(id, v) {
-            const termo = v.toLowerCase();
-            document.querySelectorAll(`#${id} tbody tr`).forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(termo) ? '' : 'none');
-        }
-
-        function exportarExcel(id, nome) {
-            const wb = XLSX.utils.table_to_book(document.getElementById(id));
-            XLSX.writeFile(wb, `${nome}.xlsx`);
-        }
-
-        function exportarPDF(id, titulo) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text(titulo, 14, 15);
-            doc.autoTable({ html: `#${id}`, startY: 20 });
-            doc.save(`${titulo}.pdf`);
-        }
-
-        async function salvarRemoto(acao, dados) {
+        async function salvar(acao, dados) {
             fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) });
         }
 
         async function carregar() {
             try {
-                const res = await fetch(URL_SCRIPT); const d = await res.json();
-                // Normaliza nomes de colunas do Google
-                empresas = (d.empresas || []).map(e => ({ nome: e.nome || e.Nome, valor: parseFloat(e.valor || e.Valor) || 0 }));
-                funcionarios = (d.funcionarios || []).map(f => ({ 
-                    matricula: f.matricula || f.Matriculas, 
-                    nome: f.nome || f.Nome, 
-                    dias: parseFloat(f.dias || f.Dias) || 0, 
-                    setor: f.setor || f.Setor, 
-                    bonus: f.bonus || f.Bonificados 
-                }));
-                renderEmpresas(); renderFuncs();
-            } catch(e) { console.error("Erro carga:", e); }
+                const res = await fetch(URL_SCRIPT);
+                const d = await res.json();
+                empresas = d.empresas || [];
+                funcionarios = d.funcionarios || [];
+                renderEmp(); renderFunc();
+            } catch(e) { console.log("Iniciando com dados vazios"); }
+        }
+
+        function exportarExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('tab-rateio')), "Rateio.xlsx"); }
+        function exportarPDF() { 
+            const doc = new jspdf.jsPDF(); 
+            doc.text("Relatório de Rateio", 14, 15);
+            doc.autoTable({ html: '#tab-rateio', startY: 20 });
+            doc.save("Rateio.pdf");
         }
 
         window.onload = carregar;
