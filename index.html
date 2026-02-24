@@ -5,18 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Pagamentos - Rateio</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
 
     <header>
         <div class="header-content">
-            <div class="logo-area">
-                <img src="https://via.placeholder.com/50" alt="Logo">
-                <h1>Nome da Empresa</h1>
-            </div>
-            <div class="date-area">
-                <span id="mes-atual">Fevereiro/2026</span>
-            </div>
+            <div class="logo-area"><h1>Minha Empresa</h1></div>
+            <div class="date-area"><span id="mes-atual">Fevereiro/2026</span></div>
         </div>
     </header>
 
@@ -25,9 +21,9 @@
             <h2>Controle de Pagamentos</h2>
             <p class="subtitle">gestão de pagamentos de rateio</p>
             <div class="menu-buttons">
-                <button onclick="navegar('tela-empresas')">Relação de Empresas</button>
-                <button onclick="navegar('tela-pagamentos')">Relação de Pagamento</button>
-                <button onclick="navegar('tela-bonificados')">Gerenciar Bonificados</button>
+                <button onclick="navegar('tela-empresas')">Empresas Contribuintes</button>
+                <button onclick="navegar('tela-cadastro')">Base de Funcionários</button>
+                <button onclick="navegar('tela-pagamentos')">Relatório de Rateio</button>
             </div>
         </div>
     </section>
@@ -39,27 +35,31 @@
                 <button onclick="navegar('tela-pagamentos')">Ir para Pagamentos</button>
             </div>
             <h2>Relação de Empresas</h2>
-            
-            <div class="add-area">
-                <input type="text" id="empresa-nome" placeholder="Nome da Empresa">
-                <input type="number" id="empresa-valor" placeholder="Valor R$">
-                <button onclick="adicionarEmpresa()">Adicionar</button>
+            <div class="import-area">
+                <textarea id="colar-empresas" placeholder="Cole aqui as colunas do Excel (Empresa [tab] Valor)"></textarea>
+                <button onclick="importarEmpresas()" style="background:#28a745">Processar Dados Colados</button>
             </div>
-
             <table id="tabela-empresas">
-                <thead>
-                    <tr>
-                        <th>Empresa</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Empresa</th><th>Valor</th><th>Ação</th></tr></thead>
                 <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <td><strong>TOTAL</strong></td>
-                        <td id="total-arrecadado">R$ 0,00</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr><td><strong>TOTAL</strong></td><td id="total-arrecadado">R$ 0,00</td><td></td></tr></tfoot>
+            </table>
+        </div>
+    </section>
+
+    <section id="tela-cadastro" class="tela">
+        <div class="container">
+            <div class="nav-top">
+                <button onclick="navegar('tela-menu')">Menu</button>
+            </div>
+            <h2>Base de Funcionários</h2>
+            <div class="import-area">
+                <textarea id="colar-funcionarios" placeholder="Cole aqui: Matrícula | Nome | Dias | Setor | Bonificado(Sim/Não)"></textarea>
+                <button onclick="importarFuncionarios()" style="background:#28a745">Importar Funcionários</button>
+            </div>
+            <table id="tabela-cadastro-lista">
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Bonif.</th><th>Ações</th></tr></thead>
+                <tbody></tbody>
             </table>
         </div>
     </section>
@@ -69,31 +69,20 @@
             <div class="nav-top">
                 <button onclick="navegar('tela-menu')">Menu</button>
                 <button onclick="navegar('tela-empresas')">Voltar</button>
-                <button onclick="navegar('tela-bonificados')">Bonificados</button>
+                <button onclick="navegar('tela-bonificados')">Ver Bonificados</button>
             </div>
             <h2>Relação de Pagamento de Rateio</h2>
-
             <div class="resumo-cards">
-                <div class="card">Total Arrecadado: <span id="resumo-total">R$ 0,00</span></div>
-                <div class="card">Total de Dias: <span id="resumo-dias">0</span></div>
+                <div class="card">Arrecadado: <span id="resumo-total">R$ 0,00</span></div>
+                <div class="card">Total Dias: <span id="resumo-dias">0</span></div>
                 <div class="card">Valor do Dia: <span id="resumo-valor-dia">R$ 0,00</span></div>
             </div>
-
             <div class="export-actions">
-                <button onclick="exportarExcel()">Exportar Excel</button>
-                <button onclick="window.print()">Exportar PDF</button>
+                <button onclick="exportarExcel()">Excel</button>
+                <button onclick="window.print()">PDF</button>
             </div>
-
             <table id="tabela-rateio">
-                <thead>
-                    <tr>
-                        <th>Matrícula</th>
-                        <th>Nome</th>
-                        <th>Setor</th>
-                        <th>Dias</th>
-                        <th>Valor a Receber</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Valor Final</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -101,32 +90,13 @@
 
     <section id="tela-bonificados" class="tela">
         <div class="container">
-            <div class="nav-top">
-                <button onclick="navegar('tela-pagamentos')">Voltar</button>
-            </div>
-            <h2>Gestão de Bonificados</h2>
-            
-            <div class="config-bonus">
-                <label>Valor do Bônus: R$ </label>
-                <input type="number" id="valor-bonus-config" value="200" onchange="calcularTudo()">
-            </div>
-
+            <div class="nav-top"><button onclick="navegar('tela-pagamentos')">Voltar</button></div>
+            <h2>Relatório de Bonificados</h2>
             <div class="filtros">
-                <input type="text" id="filtro-matricula" placeholder="Filtro Matrícula">
-                <input type="text" id="filtro-nome" placeholder="Filtro Nome">
-                <input type="text" id="filtro-setor" placeholder="Filtro Setor">
+                <input type="text" id="f-nome" placeholder="Filtrar por nome..." oninput="filtrarBonif()">
             </div>
-
-            <table id="tabela-bonificados-config">
-                <thead>
-                    <tr>
-                        <th>Matrícula</th>
-                        <th>Nome</th>
-                        <th>Setor</th>
-                        <th>Dias</th>
-                        <th>Bônus Atual</th>
-                    </tr>
-                </thead>
+            <table id="tabela-bonificados">
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Bônus</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
