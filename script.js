@@ -1,4 +1,4 @@
-const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec"; 
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec; 
 
 let empresas = [];
 let funcionarios = [];
@@ -18,7 +18,7 @@ function navegar(idTela) {
     if(idTela === 'tela-pagamentos' || idTela === 'tela-bonificados') calcularTudo();
 }
 
-// Carregar dados iniciais do Google Sheets
+// Carregar dados iniciais
 async function carregarDadosIniciais() {
     try {
         const response = await fetch(URL_GOOGLE_SCRIPT);
@@ -29,10 +29,11 @@ async function carregarDadosIniciais() {
             atualizarTabelaEmpresas();
             renderizarCadastro();
         }
-    } catch (e) { console.error("Erro ao carregar dados"); }
+    } catch (e) { console.error("Erro ao carregar dados iniciais"); }
 }
 
-// Importar Empresas (Colar do Excel)
+// --- FUNÇÕES DE EMPRESAS ---
+
 function importarEmpresas() {
     const raw = document.getElementById('colar-empresas').value;
     if (!raw.trim()) return;
@@ -49,7 +50,47 @@ function importarEmpresas() {
     document.getElementById('colar-empresas').value = '';
 }
 
-// Importar Funcionários (Colar do Excel)
+function editarEmpresa(index) {
+    const emp = empresas[index];
+    const novoNome = prompt("Novo nome da empresa:", emp.nome);
+    const novoValor = prompt("Novo valor (use ponto para decimais):", emp.valor);
+
+    if (novoNome !== null && novoValor !== null) {
+        empresas[index].nome = novoNome;
+        empresas[index].valor = parseFloat(novoValor) || 0;
+        atualizarTabelaEmpresas();
+        salvarNoGoogle('salvarEmpresas', empresas);
+    }
+}
+
+function removerEmpresa(index) {
+    if(confirm("Excluir empresa?")) {
+        empresas.splice(index, 1);
+        atualizarTabelaEmpresas();
+        salvarNoGoogle('salvarEmpresas', empresas);
+    }
+}
+
+function atualizarTabelaEmpresas() {
+    const tb = document.querySelector('#tabela-empresas tbody');
+    tb.innerHTML = '';
+    let t = 0;
+    empresas.forEach((e, i) => {
+        t += e.valor;
+        tb.innerHTML += `<tr>
+            <td>${e.nome}</td>
+            <td>R$ ${e.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td>
+                <button onclick="editarEmpresa(${i})" style="background:#f0ad4e">Editar</button>
+                <button onclick="removerEmpresa(${i})" style="background:#d9534f">Excluir</button>
+            </td>
+        </tr>`;
+    });
+    document.getElementById('total-arrecadado').innerText = "R$ " + t.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+}
+
+// --- FUNÇÕES DE FUNCIONÁRIOS ---
+
 function importarFuncionarios() {
     const raw = document.getElementById('colar-funcionarios').value;
     if (!raw.trim()) return;
@@ -71,7 +112,51 @@ function importarFuncionarios() {
     document.getElementById('colar-funcionarios').value = '';
 }
 
-// Cálculo do Rateio (Sobra Zero)
+function editarFuncionario(index) {
+    const f = funcionarios[index];
+    const novoNome = prompt("Novo nome:", f.Nome);
+    const novosDias = prompt("Novos dias trabalhados:", f.Dias);
+    const novoSetor = prompt("Novo setor:", f.Setor);
+    const bônus = confirm("Este funcionário é bonificado (R$ 200)? OK para Sim, Cancelar para Não.");
+
+    if (novoNome !== null && novosDias !== null) {
+        funcionarios[index].Nome = novoNome;
+        funcionarios[index].Dias = novosDias;
+        funcionarios[index].Setor = novoSetor;
+        funcionarios[index].Bonificados = bônus ? "Sim" : "No";
+        renderizarCadastro();
+        salvarNoGoogle('salvarTodosFuncionarios', funcionarios);
+    }
+}
+
+function removerFuncionario(index) {
+    if(confirm("Excluir funcionário?")) {
+        funcionarios.splice(index, 1);
+        renderizarCadastro();
+        salvarNoGoogle('salvarTodosFuncionarios', funcionarios);
+    }
+}
+
+function renderizarCadastro() {
+    const tb = document.querySelector('#tabela-cadastro-lista tbody');
+    tb.innerHTML = '';
+    funcionarios.forEach((f, i) => {
+        tb.innerHTML += `<tr>
+            <td>${f.Matriculas}</td>
+            <td>${f.Nome}</td>
+            <td>${f.Dias}</td>
+            <td>${f.Setor}</td>
+            <td>${f.Bonificados}</td>
+            <td>
+                <button onclick="editarFuncionario(${i})" style="background:#f0ad4e">Editar</button>
+                <button onclick="removerFuncionario(${i})" style="background:#d9534f">Excluir</button>
+            </td>
+        </tr>`;
+    });
+}
+
+// --- CÁLCULO E PERSISTÊNCIA ---
+
 function calcularTudo() {
     const totalArrecadado = empresas.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
     const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
@@ -102,42 +187,6 @@ function renderizarRelatorios(valorDia) {
         if(eBonif) {
             tbodyBonif.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Setor}</td><td>${dias}</td><td>R$ ${valorBonusBase.toLocaleString('pt-BR')}</td></tr>`;
         }
-    });
-}
-
-// Botões de Ação (Excluir)
-function removerEmpresa(index) {
-    if(confirm("Excluir empresa?")) {
-        empresas.splice(index, 1);
-        atualizarTabelaEmpresas();
-        salvarNoGoogle('salvarEmpresas', empresas);
-    }
-}
-
-function removerFuncionario(index) {
-    if(confirm("Excluir funcionário?")) {
-        funcionarios.splice(index, 1);
-        renderizarCadastro();
-        salvarNoGoogle('salvarTodosFuncionarios', funcionarios);
-    }
-}
-
-function atualizarTabelaEmpresas() {
-    const tb = document.querySelector('#tabela-empresas tbody');
-    tb.innerHTML = '';
-    let t = 0;
-    empresas.forEach((e, i) => {
-        t += e.valor;
-        tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td><td><button onclick="removerEmpresa(${i})" style="background:#d9534f">Excluir</button></td></tr>`;
-    });
-    document.getElementById('total-arrecadado').innerText = "R$ " + t.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-}
-
-function renderizarCadastro() {
-    const tb = document.querySelector('#tabela-cadastro-lista tbody');
-    tb.innerHTML = '';
-    funcionarios.forEach((f, i) => {
-        tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Dias}</td><td>${f.Setor}</td><td>${f.Bonificados}</td><td><button onclick="removerFuncionario(${i})" style="background:#d9534f">Excluir</button></td></tr>`;
     });
 }
 
