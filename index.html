@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rateio Profissional</title>
-    
+    <title>Sistema de Rateio Profissional v2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
     <style>
-        /* --- CSS PROFISSIONAL --- */
         :root {
             --verde-grad: linear-gradient(135deg, #2d9344 0%, #1e5e2d 100%);
             --laranja-grad: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
@@ -16,303 +17,269 @@
             --bg-body: #f4f7f6;
         }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-body);
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        .top-bar {
-            text-align: right;
-            padding: 15px 40px;
-            color: #555;
-            font-weight: 600;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .logo-placeholder {
-            width: 100px;
-            height: 100px;
-            background: #fff;
-            margin: 0 auto 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            color: #2c3e50;
-            margin: 0;
-        }
-
-        .subtitle {
-            color: #7f8c8d;
-            font-style: italic;
-            margin-top: 5px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .btn-dash {
-            height: 220px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-
-        .btn-dash:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        }
-
-        .btn-dash i { font-size: 4rem; margin-bottom: 20px; }
-        .btn-dash span { font-size: 1.6rem; font-weight: bold; }
-
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; }
+        .top-bar { text-align: right; padding: 10px 40px; background: #fff; font-weight: bold; border-bottom: 1px solid #ddd; }
+        header { text-align: center; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 10px; }
+        
+        /* Botões Iniciais */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .btn-dash { height: 180px; border: none; border-radius: 20px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-dash:hover { transform: translateY(-5px); }
+        .btn-dash i { font-size: 3rem; margin-bottom: 10px; }
+        .btn-dash span { font-size: 1.4rem; font-weight: bold; }
         .btn-verde { background: var(--verde-grad); }
         .btn-laranja { background: var(--laranja-grad); }
         .btn-azul { background: var(--azul-grad); }
 
-        /* Estilo das Telas */
-        .tela { display: none; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .tela.active { display: block; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f8f9fa; padding: 15px; text-align: left; border-bottom: 2px solid #eee; }
-        td { padding: 15px; border-bottom: 1px solid #eee; }
-
-        textarea { width: 100%; height: 150px; border-radius: 10px; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; font-family: inherit; }
+        /* Estilo das Telas e Tabelas */
+        .tela { display: none; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .active { display: block; }
         
-        button.voltar { background: #666; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
-        .btn-acao { padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; color: white; margin-right: 5px; }
+        textarea { width: 100%; height: 60px; border-radius: 8px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; resize: none; }
+        input.busca { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: #f8f9fa; padding: 8px; text-align: left; border-bottom: 2px solid #ddd; }
+        td { padding: 6px 8px; border-bottom: 1px solid #eee; height: 30px; } /* Linhas menores */
+        
+        .btn-acao { padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; color: white; font-size: 0.8rem; margin-right: 3px; }
+        .export-btns { margin: 10px 0; display: flex; gap: 10px; }
+        .btn-export { padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        
+        .resumo-card { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar" id="data-atual">Fevereiro/2026</div>
+    <div class="top-bar">Fevereiro/2026</div>
 
     <header id="header-principal">
-        <div class="logo-placeholder">
-            <i class="fa-solid fa-gears fa-3x" style="color: #3498db;"></i>
-        </div>
+        <div style="font-size: 3rem; color: #3498db; margin-bottom: 10px;"><i class="fa-solid fa-gears"></i></div>
         <h1>Sistema de Rateio</h1>
-        <p class="subtitle">gestão de pagamentos eficiente</p>
+        <p style="color:#666">gestão de pagamentos eficiente</p>
     </header>
 
     <div class="container">
-        
-        <section id="tela-menu" class="tela active" style="background: transparent; box-shadow: none;">
+        <section id="tela-menu" class="tela active" style="background:transparent; box-shadow:none;">
             <div class="dashboard-grid">
-                <button class="btn-dash btn-verde" onclick="navegar('tela-empresas')">
-                    <i class="fa-solid fa-building-columns"></i>
-                    <span>Empresas</span>
-                </button>
-                <button class="btn-dash btn-laranja" onclick="navegar('tela-cadastro')">
-                    <i class="fa-solid fa-users-gear"></i>
-                    <span>Funcionários</span>
-                </button>
-                <button class="btn-dash btn-azul" onclick="navegar('tela-pagamentos')">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Relatório Final</span>
-                </button>
+                <button class="btn-dash btn-verde" onclick="navegar('tela-empresas')"><i class="fa-solid fa-building"></i><span>Empresas</span></button>
+                <button class="btn-dash btn-laranja" onclick="navegar('tela-cadastro')"><i class="fa-solid fa-users"></i><span>Funcionários</span></button>
+                <button class="btn-dash btn-azul" onclick="navegar('tela-pagamentos')"><i class="fa-solid fa-file-invoice-dollar"></i><span>Relatório Final</span></button>
             </div>
         </section>
 
         <section id="tela-empresas" class="tela">
-            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+            <button onclick="navegar('tela-menu')" style="margin-bottom:10px;">Voltar</button>
             <h2>Empresas Contribuintes</h2>
-            <textarea id="colar-empresas" placeholder="Cole aqui as colunas do Excel: Empresa [TAB] Valor"></textarea>
-            <button onclick="importarEmpresas()" style="background:#2d9344; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer;">Processar Dados</button>
+            <textarea id="colar-empresas" placeholder="Empresa [TAB] Valor"></textarea>
+            <button onclick="importarEmpresas()" style="background:green; color:white; padding:8px 15px; border:none; border-radius:5px;">Importar</button>
+            
+            <div class="export-btns">
+                <button onclick="exportarExcel('tabela-empresas', 'Empresas')" class="btn-export" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF('tabela-empresas', 'Empresas')" class="btn-export" style="background:#d32f2f;">PDF</button>
+            </div>
+
+            <input type="text" id="busca-empresa" class="busca" placeholder="Buscar empresa..." onkeyup="filtrarTabela('tabela-empresas', this.value)">
+            
             <table id="tabela-empresas">
                 <thead><tr><th>Empresa</th><th>Valor</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
-                <tfoot><tr><td><strong>TOTAL ARRECADADO</strong></td><td id="total-arrecadado" style="font-weight:bold; color:green;">R$ 0,00</td><td></td></tr></tfoot>
+                <tfoot><tr><td><strong>TOTAL</strong></td><td id="total-arrecadado" style="font-weight:bold;">R$ 0,00</td><td></td></tr></tfoot>
             </table>
         </section>
 
         <section id="tela-cadastro" class="tela">
-            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-            <h2>Base de Funcionários</h2>
-            <textarea id="colar-funcionarios" placeholder="Cole aqui: Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bonificado (Sim/Não)"></textarea>
-            <button onclick="importarFuncionarios()" style="background:#2d9344; color:white; padding:12px 25px; border:none; border-radius:8px; cursor:pointer;">Importar Lista</button>
+            <button onclick="navegar('tela-menu')" style="margin-bottom:10px;">Voltar</button>
+            <h2>Gestão de Funcionários</h2>
+            <textarea id="colar-funcionarios" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus(Sim/Não)"></textarea>
+            <button onclick="importarFuncionarios()" style="background:green; color:white; padding:8px 15px; border:none; border-radius:5px;">Importar</button>
+            
+            <div class="export-btns">
+                <button onclick="exportarExcel('tabela-cadastro-lista', 'Funcionarios')" class="btn-export" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF('tabela-cadastro-lista', 'Funcionarios')" class="btn-export" style="background:#d32f2f;">PDF</button>
+            </div>
+
+            <input type="text" id="busca-funcionario" class="busca" placeholder="Buscar funcionário..." onkeyup="filtrarTabela('tabela-cadastro-lista', this.value)">
+            
             <table id="tabela-cadastro-lista">
-                <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Bonif.</th><th>Ações</th></tr></thead>
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Bônus</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
             </table>
         </section>
 
         <section id="tela-pagamentos" class="tela">
-            <button class="voltar" onclick="navegar('tela-menu')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-            <h2>Relatório de Rateio Dinâmico</h2>
-            <div style="display:flex; gap:20px; margin-bottom:30px;">
-                <div style="flex:1; background:#eee; padding:20px; border-radius:15px; text-align:center;">
-                    <small>Arrecadação</small><br><strong id="resumo-total" style="font-size:1.4rem;">R$ 0,00</strong>
-                </div>
-                <div style="flex:1; background:#eee; padding:20px; border-radius:15px; text-align:center;">
-                    <small>Valor p/ Dia</small><br><strong id="resumo-valor-dia" style="font-size:1.4rem; color:#2980b9;">R$ 0,00</strong>
-                </div>
+            <button onclick="navegar('tela-menu')" style="margin-bottom:10px;">Voltar</button>
+            <h2>Relatório Final de Pagamentos</h2>
+            
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:20px;">
+                <div class="resumo-card"><small>Qtd Funcionários</small><br><b id="qtd-func">0</b></div>
+                <div class="resumo-card"><small>Total de Dias</small><br><b id="total-dias">0</b></div>
+                <div class="resumo-card"><small>Valor por Dia</small><br><b id="v-dia">R$ 0,00</b></div>
             </div>
+
+            <div class="export-btns">
+                <button onclick="exportarExcel('tabela-rateio', 'Relatorio_Final')" class="btn-export" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF('tabela-rateio', 'Relatorio_Final')" class="btn-export" style="background:#d32f2f;">PDF</button>
+            </div>
+
             <table id="tabela-rateio">
-                <thead><tr><th>Matrícula</th><th>Nome</th><th>Dias</th><th>Setor</th><th>Valor Final</th></tr></thead>
+                <thead><tr><th>Matrícula</th><th>Nome</th><th>Setor</th><th>Dias</th><th>Bônus</th><th>Valor Total</th></tr></thead>
                 <tbody></tbody>
             </table>
         </section>
+    </div>
 
+    <div id="modal-edicao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:white; padding:20px; border-radius:10px; width:300px;">
+            <h3>Editar Registro</h3>
+            <div id="campos-edicao"></div>
+            <button onclick="salvarEdicao()" style="background:green; color:white; border:none; padding:10px; border-radius:5px; margin-top:10px; cursor:pointer;">Salvar</button>
+            <button onclick="document.getElementById('modal-edicao').style.display='none'" style="background:#666; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">Cancelar</button>
+        </div>
     </div>
 
     <script>
-        /* --- JAVASCRIPT INTEGRADO --- */
-        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec"; 
-        
-        let empresas = [];
-        let funcionarios = [];
-        const valorBonusBase = 200.00;
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzD7tsKOasJUNiXPlHaP3Sv9CXAKibAFNvhCiVgqyiaTjRj0m-ko1MFNkDr9qfq0PZE/exec";
+        let empresas = [], funcionarios = [], indexEdicao = -1, tipoEdicao = '';
 
-        function navegar(idTela) {
+        function navegar(id) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
-            document.getElementById(idTela).classList.add('active');
-            
-            // Esconde o header na tela inicial se quiser mais espaço, ou mantém.
-            if(idTela === 'tela-menu') {
-                document.getElementById('header-principal').style.display = 'block';
-            } else {
-                document.getElementById('header-principal').style.display = 'none';
-            }
-
-            if(idTela === 'tela-pagamentos') calcularTudo();
+            document.getElementById(id).classList.add('active');
+            document.getElementById('header-principal').style.display = (id === 'tela-menu' ? 'block' : 'none');
+            if(id === 'tela-pagamentos') calcularTudo();
         }
 
-        async function carregarDados() {
-            try {
-                const res = await fetch(URL_SCRIPT);
-                const data = await res.json();
-                empresas = data.empresas || [];
-                funcionarios = data.funcionarios || [];
-                renderizarEmpresas();
-                renderizarCadastro();
-            } catch (e) { console.log("Erro ao carregar do Google"); }
-        }
-
+        // --- IMPORTAÇÃO ---
         function importarEmpresas() {
-            const raw = document.getElementById('colar-empresas').value;
-            const linhas = raw.split('\n');
-            linhas.forEach(l => {
+            const raw = document.getElementById('colar-empresas').value.trim();
+            raw.split('\n').forEach(l => {
                 const c = l.split('\t');
-                if(c.length >= 2) {
-                    let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-                    empresas.push({ nome: c[0].trim(), valor: parseFloat(v) || 0 });
-                }
+                if(c.length >= 2) empresas.push({ nome: c[0].trim(), valor: parseFloat(c[1].replace('R$', '').replace(/\./g, '').replace(',', '.')) || 0 });
             });
-            renderizarEmpresas();
-            salvar('salvarEmpresas', empresas);
+            renderEmpresas(); salvar('salvarEmpresas', empresas);
             document.getElementById('colar-empresas').value = '';
         }
 
-        function renderizarEmpresas() {
-            const tb = document.querySelector('#tabela-empresas tbody');
-            tb.innerHTML = '';
-            let total = 0;
-            empresas.forEach((e, i) => {
-                total += e.valor;
-                tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR')}</td>
-                <td><button onclick="excluirEmpresa(${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
-            });
-            document.getElementById('total-arrecadado').innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits:2});
-        }
-
-        function excluirEmpresa(i) {
-            empresas.splice(i, 1);
-            renderizarEmpresas();
-            salvar('salvarEmpresas', empresas);
-        }
-
         function importarFuncionarios() {
-            const raw = document.getElementById('colar-funcionarios').value;
-            const linhas = raw.split('\n');
-            linhas.forEach(l => {
+            const raw = document.getElementById('colar-funcionarios').value.trim();
+            raw.split('\n').forEach(l => {
                 const c = l.split('\t');
-                if(c.length >= 4) {
-                    funcionarios.push({
-                        Matriculas: c[0].trim(),
-                        Nome: c[1].trim(),
-                        Dias: c[2].trim(),
-                        Setor: c[3].trim(),
-                        Bonificados: (c[4] && c[4].trim().toLowerCase() === 'sim') ? "Sim" : "No"
-                    });
-                }
+                if(c.length >= 4) funcionarios.push({ matricula: c[0], nome: c[1], dias: parseFloat(c[2]) || 0, setor: c[3], bonus: (c[4] && c[4].toLowerCase().includes('sim')) ? 'Sim' : 'Não' });
             });
-            renderizarCadastro();
-            salvar('salvarTodosFuncionarios', funcionarios);
+            renderFuncs(); salvar('salvarTodosFuncionarios', funcionarios);
             document.getElementById('colar-funcionarios').value = '';
         }
 
-        function renderizarCadastro() {
-            const tb = document.querySelector('#tabela-cadastro-lista tbody');
-            tb.innerHTML = '';
+        // --- RENDERIZAÇÃO ---
+        function renderEmpresas() {
+            const tb = document.querySelector('#tabela-empresas tbody'); tb.innerHTML = '';
+            let t = 0;
+            empresas.forEach((e, i) => {
+                t += e.valor;
+                tb.innerHTML += `<tr><td>${e.nome}</td><td>R$ ${e.valor.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+                <td><button onclick="abrirEdicao('emp', ${i})" class="btn-acao" style="background:#f0ad4e">Editar</button>
+                <button onclick="excluir('emp', ${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
+            });
+            document.getElementById('total-arrecadado').innerText = "R$ " + t.toLocaleString('pt-BR', {minimumFractionDigits:2});
+        }
+
+        function renderFuncs() {
+            const tb = document.querySelector('#tabela-cadastro-lista tbody'); tb.innerHTML = '';
             funcionarios.forEach((f, i) => {
-                tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${f.Dias}</td><td>${f.Setor}</td><td>${f.Bonificados}</td>
-                <td><button onclick="excluirFunc(${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
+                tb.innerHTML += `<tr><td>${f.matricula}</td><td>${f.nome}</td><td>${f.dias}</td><td>${f.setor}</td><td>${f.bonus}</td>
+                <td><button onclick="abrirEdicao('func', ${i})" class="btn-acao" style="background:#f0ad4e">Editar</button>
+                <button onclick="excluir('func', ${i})" class="btn-acao" style="background:#d9534f">Excluir</button></td></tr>`;
             });
         }
 
-        function excluirFunc(i) {
-            funcionarios.splice(i, 1);
-            renderizarCadastro();
-            salvar('salvarTodosFuncionarios', funcionarios);
-        }
-
+        // --- CÁLCULO RATEIO (Ajustado) ---
         function calcularTudo() {
-            const totalArrecadado = empresas.reduce((acc, e) => acc + e.valor, 0);
-            const totalDias = funcionarios.reduce((acc, f) => acc + (parseFloat(f.Dias) || 0), 0);
-            const bonificados = funcionarios.filter(f => f.Bonificados === "Sim").length;
+            const totalArrecadado = empresas.reduce((a, b) => a + b.valor, 0);
+            const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
+            const numBonificados = funcionarios.filter(f => f.bonus === 'Sim').length;
             
-            const custoBonus = bonificados * valorBonusBase;
-            const liquido = totalArrecadado - custoBonus;
-            const valorDia = totalDias > 0 ? liquido / totalDias : 0;
+            const custoBonus = numBonificados * 200;
+            const liquidoParaDias = totalArrecadado - custoBonus;
+            const valorPorDia = totalDias > 0 ? liquidoParaDias / totalDias : 0;
 
-            document.getElementById('resumo-total').innerText = "R$ " + totalArrecadado.toLocaleString('pt-BR');
-            document.getElementById('resumo-valor-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR', {minimumFractionDigits:4});
+            document.getElementById('qtd-func').innerText = funcionarios.length;
+            document.getElementById('total-dias').innerText = totalDias;
+            document.getElementById('v-dia').innerText = "R$ " + valorPorDia.toLocaleString('pt-BR', {minimumFractionDigits:4});
 
-            const tb = document.querySelector('#tabela-rateio tbody');
-            tb.innerHTML = '';
+            const tb = document.querySelector('#tabela-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
-                const dias = parseFloat(f.Dias) || 0;
-                const bonus = f.Bonificados === "Sim" ? valorBonusBase : 0;
-                const total = (dias * valorDia) + bonus;
-                tb.innerHTML += `<tr><td>${f.Matriculas}</td><td>${f.Nome}</td><td>${dias}</td><td>${f.Setor}</td><td><strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></td></tr>`;
+                const valorDias = f.dias * valorPorDia;
+                const valorBonus = f.bonus === 'Sim' ? 200 : 0;
+                const total = valorDias + valorBonus;
+                tb.innerHTML += `<tr><td>${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td>${f.dias}</td><td>R$ ${valorBonus}</td><td><strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></td></tr>`;
             });
+        }
+
+        // --- EDIÇÃO E EXCLUSÃO ---
+        function abrirEdicao(tipo, i) {
+            tipoEdicao = tipo; indexEdicao = i;
+            const campos = document.getElementById('campos-edicao');
+            if(tipo === 'emp') {
+                campos.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"><br>Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
+            } else {
+                campos.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"><br>Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"><br>Setor: <input id="ed-3" value="${funcionarios[i].setor}"><br>Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
+            }
+            document.getElementById('modal-edicao').style.display = 'flex';
+        }
+
+        function salvarEdicao() {
+            if(tipoEdicao === 'emp') {
+                empresas[indexEdicao].nome = document.getElementById('ed-1').value;
+                empresas[indexEdicao].valor = parseFloat(document.getElementById('ed-2').value);
+                renderEmpresas(); salvar('salvarEmpresas', empresas);
+            } else {
+                funcionarios[indexEdicao].nome = document.getElementById('ed-1').value;
+                funcionarios[indexEdicao].dias = parseFloat(document.getElementById('ed-2').value);
+                funcionarios[indexEdicao].setor = document.getElementById('ed-3').value;
+                funcionarios[indexEdicao].bonus = document.getElementById('ed-4').value;
+                renderFuncs(); salvar('salvarTodosFuncionarios', funcionarios);
+            }
+            document.getElementById('modal-edicao').style.display = 'none';
+        }
+
+        function excluir(tipo, i) {
+            if(!confirm("Excluir?")) return;
+            if(tipo === 'emp') { empresas.splice(i, 1); renderEmpresas(); salvar('salvarEmpresas', empresas); }
+            else { funcionarios.splice(i, 1); renderFuncs(); salvar('salvarTodosFuncionarios', funcionarios); }
+        }
+
+        // --- UTILITÁRIOS ---
+        function filtrarTabela(id, valor) {
+            const filtro = valor.toLowerCase();
+            const linhas = document.querySelectorAll(`#${id} tbody tr`);
+            linhas.forEach(l => l.style.display = l.innerText.toLowerCase().includes(filtro) ? '' : 'none');
+        }
+
+        function exportarExcel(id, nome) {
+            const table = document.getElementById(id);
+            const wb = XLSX.utils.table_to_book(table);
+            XLSX.writeFile(wb, `${nome}.xlsx`);
+        }
+
+        function exportarPDF(id, titulo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(titulo, 14, 15);
+            doc.autoTable({ html: `#${id}`, startY: 20 });
+            doc.save(`${titulo}.pdf`);
         }
 
         async function salvar(acao, dados) {
             fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) });
+        }
+
+        async function carregarDados() {
+            try {
+                const res = await fetch(URL_SCRIPT); const d = await res.json();
+                empresas = d.empresas || []; funcionarios = d.funcionarios || [];
+                renderEmpresas(); renderFuncs();
+            } catch(e) {}
         }
 
         window.onload = carregarDados;
