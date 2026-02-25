@@ -119,16 +119,7 @@
         </section>
     </div>
 
-    <div id="modal-edicao">
-        <div class="modal-content">
-            <h4 style="margin-top:0">Editar Registro</h4>
-            <div id="corpo-modal"></div>
-            <div style="margin-top:20px; text-align:right;">
-                <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button>
-                <button onclick="fecharModal()" class="btn-std" style="background:#666">Sair</button>
-            </div>
-        </div>
-    </div>
+    <div id="modal-edicao"><div class="modal-content"><h4 style="margin-top:0">Editar Registro</h4><div id="corpo-modal"></div><div style="margin-top:20px; text-align:right;"><button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button> <button onclick="fecharModal()" class="btn-std" style="background:#666">Sair</button></div></div></div>
 
     <footer>Desenvolvido por: <b>Allan Ramos | Policial Penal do CPP II de Bauru</b></footer>
 
@@ -141,6 +132,11 @@
             document.getElementById(id).classList.add('active');
             document.getElementById('main-header').style.display = (id === 'tela-menu' ? 'block' : 'none');
             if(id === 'tela-pagamentos') calcular();
+        }
+
+        // FUNÇÃO DE FORMATAÇÃO FORÇADA PARA 2 CASAS
+        function fmt(valor) {
+            return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         function importar(tipo) {
@@ -168,9 +164,9 @@
             const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
             empresas.forEach((e, i) => { 
                 total += e.valor; 
-                tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
+                tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
             });
-            document.getElementById('total-emp-display').innerText = total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+            document.getElementById('total-emp-display').innerText = fmt(total);
         }
 
         function renderFunc() {
@@ -188,14 +184,14 @@
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
             
-            document.getElementById('esp-total-moi').innerText = bruto.toLocaleString('pt-BR',{minimumFractionDigits:2});
+            document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
-            document.getElementById('esp-valor-dia').innerText = valorDia.toLocaleString('pt-BR',{minimumFractionDigits:2});
+            document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
             
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
-                const total = f.dias * valorDia;
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b></td></tr>`;
+                const totalFunc = f.dias * valorDia;
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
             });
         }
 
@@ -223,19 +219,17 @@
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            const totalMoi = empresas.reduce((a, b) => a + b.valor, 0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+            const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
 
             doc.setFontSize(11); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
-
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
             doc.setFontSize(12); doc.setTextColor(255, 255, 255);
             doc.text("Relatório de Rateio", 18, 34.5); 
             doc.setFontSize(10); doc.text(`TOTAL M.O.I: ${totalMoi}`, 279, 34.5, { align: "right" });
-            
             doc.setTextColor(0, 0, 0); doc.text(`Referência: ${mes} / ${ano}`, 14, 42);
 
-            const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})]);
+            const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
             doc.autoTable({ head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 } });
 
             doc.setFont("helvetica", "bold"); doc.text("Relatório de Pagamentos", 14, doc.lastAutoTable.finalY + 10);
@@ -246,20 +240,17 @@
             });
 
             doc.autoTable({ head: headRateio, body: bodyRateio, startY: doc.lastAutoTable.finalY + 15, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [45, 147, 68] } });
-
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
             const dataRef = `${document.getElementById('sel-mes-referencia').value}_${document.getElementById('sel-ano-referencia').value}`;
             const ws_data = [ ["Relatório de Rateio - CPP II Bauru"], [], ["Nº", "Empresas", "Valor"] ];
-            empresas.forEach((e, i) => ws_data.push([i+1, e.nome, e.valor]));
+            empresas.forEach((e, i) => ws_data.push([i+1, e.nome, fmt(e.valor)]));
             ws_data.push([""], ["RELATÓRIO DE PAGAMENTOS"], ["Matrícula", "Nome", "Setor", "Dias", "Total Final"]);
-            
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => {
                 ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
             });
-
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Rateio"); XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
         }
