@@ -12,8 +12,8 @@
 
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza-claro: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; }
-        .container { max-width: 1150px; margin: 0 auto; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+        .container { max-width: 1150px; margin: 0 auto; padding: 20px; flex: 1; }
         .header-container { text-align: center; padding: 20px; }
         .logo-placeholder { width: 120px; height: auto; margin-bottom: 10px; border-radius: 10px; }
         .tela { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
@@ -31,10 +31,14 @@
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 8px; border-bottom: 2px solid #ccc; }
         td { padding: 6px 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
-        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; margin-bottom: 10px; }
+        textarea { width: 100%; height: 75px; border: 1px solid #ccc; border-radius: 6px; padding: 10px; font-size: 0.85rem; margin-bottom: 10px; font-family: sans-serif; box-sizing: border-box; }
         .btn-std { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
         .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 2px 5px; }
         .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; }
+        
+        /* ESTILO DA ASSINATURA ALLAN */
+        footer { text-align: center; padding: 20px; color: #888; font-size: 0.85rem; }
+        footer b { color: #555; }
     </style>
 </head>
 <body>
@@ -56,18 +60,18 @@
 
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
-            <h3 style="color:var(--verde)">Lançamento M.O.I</h3>
-            <textarea id="txt-empresas" placeholder="Cole os dados do Excel aqui..."></textarea>
+            <h3 style="color:var(--verde)">Lançamento M.O.I (Receitas)</h3>
+            <textarea id="txt-empresas" placeholder="Cole os dados do Excel |Nome e Valor..."></textarea>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                 <select id="sel-mes-referencia" class="sel-mes">
-                    <option value="">Mês</option>
+                    <option value="">Mês de Referência</option>
                     <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
                     <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
                     <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
                 </select>
                 <select id="sel-ano-referencia" class="sel-mes"><option>2025</option><option selected>2026</option></select>
-                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar</button>
-                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
+                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar Dados</button>
+                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-empresas">
@@ -75,15 +79,15 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <p style="text-align: right; font-weight: bold; color: var(--verde);">TOTAL M.O.I: <span id="total-emp-display">R$ 0,00</span></p>
+            <p style="text-align: right; font-weight: bold; color: var(--verde); font-size: 1.1rem;">TOTAL M.O.I: <span id="total-emp-display">R$ 0,00</span></p>
         </section>
 
         <section id="tela-cadastro" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
             <h3 style="color:var(--laranja)">Gestão de Funcionários</h3>
-            <textarea id="txt-funcs" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
-            <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar</button>
-            <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
+            <textarea id="txt-funcs" placeholder="Cole os dados do Excel: |matrícula|Nome|Dias|Setor|Bônus"></textarea>
+            <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar Lista</button>
+            <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar Todos</button>
             <div class="table-wrapper">
                 <table id="tab-funcs">
                     <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Bônus</th><th class="text-center">Ações</th></tr></thead>
@@ -94,15 +98,15 @@
 
         <section id="tela-pagamentos" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
-            <h3 id="titulo-pagamentos" style="color:var(--azul)">Relação de Pagamentos</h3>
+            <h3 id="titulo-pagamentos" style="color:var(--azul)">Relatório de Pagamentos</h3>
             <div class="resumo-grid">
                 <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">R$ 0,00</b></div>
                 <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
                 <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">R$ 0,00</b></div>
             </div>
-            <div style="text-align: right; margin-bottom: 10px;">
-                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
-                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
+            <div style="text-align: right; margin-bottom: 10px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
+                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> PDF</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-rateio">
@@ -113,16 +117,9 @@
         </section>
     </div>
 
-    <div id="modal-edicao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:25px; border-radius:8px; width:340px;">
-            <h4 id="titulo-modal">Editar</h4>
-            <div id="corpo-modal" style="display:flex; flex-direction:column; gap:10px;"></div>
-            <div style="margin-top:20px; text-align:right;">
-                <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button>
-                <button onclick="fecharModal()" class="btn-std" style="background:#666;">Sair</button>
-            </div>
-        </div>
-    </div>
+    <footer>
+        Desenvolvido por: <b>Allan Ramos | Policial Penal do CPP II de Bauru</b>
+    </footer>
 
     <script>
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfCfWVF-fIn1KLcG1yzuCTzD4tkRwL5fNWR76MFkTVysrRZBo-1AsyMnOuPBE5isia/exec";
@@ -136,7 +133,7 @@
         }
 
         function importar(tipo) {
-            if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
+            if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês de Referência!");
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
             if(!txt) return;
 
@@ -144,9 +141,7 @@
                 const c = linha.split('\t');
                 if(tipo === 'emp' && c.length >= 2) {
                     const col1 = c[0].toUpperCase().trim();
-                    // FILTRO: Pula se for número da ordem, a palavra Empresa ou a linha de Total
                     if(!isNaN(col1) || col1.includes("Nº") || col1.includes("EMPRESA") || col1.includes("TOTAL")) return;
-                    
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
                     if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
                 } else if(tipo === 'func' && c.length >= 4) {
@@ -160,19 +155,19 @@
 
         function renderEmp() {
             const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
-            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td><td class="text-center"><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
             document.getElementById('total-emp-display').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
         }
 
         function renderFunc() {
             const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
-            funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.bonus}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+            funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.bonus}</td><td class="text-center"><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
         }
 
         function calcular() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            document.getElementById('titulo-pagamentos').innerText = `Relação de Pagamentos - ${mes} / ${ano}`;
+            document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${mes} / ${ano}`;
             const bruto = empresas.reduce((a, b) => a + b.valor, 0);
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const qtdBonus = funcionarios.filter(f => f.bonus === 'Sim').length;
@@ -187,76 +182,46 @@
             });
         }
 
-        function abrirEdicao(t, i) {
-            tipoEditando = t; idEditando = i; const c = document.getElementById('corpo-modal');
-            if(t==='emp') c.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
-            else c.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
-            document.getElementById('modal-edicao').style.display = 'flex';
-        }
-
-        function salvarEdicao() {
-            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value; empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
-            else { funcionarios[idEditando].nome = document.getElementById('ed-1').value; funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value; funcionarios[idEditando].bonus = document.getElementById('ed-4').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
-            fecharModal();
-        }
-
-        function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
-        function excluir(t, i) { if(confirm("Excluir?")) { t === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
+        function excluir(t, i) { if(confirm("Deseja realmente excluir este item?")) { t === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
         async function salvar(a, d) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
         async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) {} }
-        async function limparRemoto(a) { if(confirm("Limpar tudo?")) { a === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(a, []); } }
+        async function limparRemoto(a) { if(confirm("Atenção: Isso apagará todos os dados salvos. Confirmar?")) { a === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(a, []); } }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            const dataRef = `${mes} / ${ano}`;
             const totalMoi = empresas.reduce((a, b) => a + b.valor, 0);
 
-            // Cabeçalho Institucional
-            doc.setFontSize(11);
-            doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
+            doc.setFontSize(11); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
             doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
 
-            // Faixa de Título
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
             doc.setFontSize(12); doc.setTextColor(255, 255, 255);
             doc.text("Relatório de Rateio", 18, 34.5); 
+            doc.setFontSize(10); doc.text(`TOTAL M.O.I: R$ ${totalMoi.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, 279, 34.5, { align: "right" });
             
-            // TOTAL M.O.I NO CANTO DIREITO DO CABEÇALHO (SUA IDEIA)
-            doc.setFontSize(10);
-            doc.text(`TOTAL M.O.I: R$ ${totalMoi.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, 279, 34.5, { align: "right" });
-            
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(10);
-            doc.text(`Referência: ${dataRef}`, 14, 42);
+            doc.setTextColor(0, 0, 0); doc.setFontSize(10);
+            doc.text(`Referência: ${mes} / ${ano}`, 14, 42);
 
-            // Tabela Empresas
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, `R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`]);
             doc.autoTable({
-                head: [['Nº', 'Empresas', 'Valor']],
-                body: dadosEmpresas,
-                startY: 46,
-                theme: 'grid',
-                styles: { fontSize: 8.5 },
-                headStyles: { fillColor: [100, 100, 100], halign: 'center' },
-                columnStyles: { 0: { halign: 'center', cellWidth: 15 }, 2: { halign: 'center', cellWidth: 45 } }
+                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 },
+                headStyles: { fillColor: [100, 100, 100], halign: 'center' }, columnStyles: { 0: { halign: 'center', cellWidth: 15 }, 2: { halign: 'center' } }
             });
 
-            // Tabela Rateio
+            doc.setFontSize(11); doc.setFont("helvetica", "bold");
+            doc.text("Relatório de Pagamentos", 14, doc.lastAutoTable.finalY + 10);
+
             doc.autoTable({
-                html: '#tab-rateio',
-                startY: doc.lastAutoTable.finalY + 12,
-                theme: 'grid',
-                headStyles: { fillColor: [45, 147, 68], halign: 'center' },
-                styles: { fontSize: 8.5 },
-                columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' } }
+                html: '#tab-rateio', startY: doc.lastAutoTable.finalY + 15, theme: 'grid', headStyles: { fillColor: [45, 147, 68], halign: 'center' },
+                styles: { fontSize: 8.5 }, columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' } }
             });
 
-            // Assinaturas
             let fY = doc.lastAutoTable.finalY + 20; if (fY > 165) { doc.addPage(); fY = 30; }
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
             doc.text("__________________________________________", 148.5, fY, { align: "center" });
             doc.text("CARLOS HENRIQUE GREJO", 148.5, fY + 5, { align: "center" });
             doc.text("Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional", 148.5, fY + 10, { align: "center" });
@@ -264,7 +229,7 @@
             doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, fY + 35, { align: "center" });
             doc.text("Chefe de Departamento", 148.5, fY + 40, { align: "center" });
 
-            doc.save(`Rateio_${dataRef.replace(/ \/ /g, '_')}.pdf`);
+            doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
@@ -272,15 +237,13 @@
             const ws_data = [ ["Relatório de Rateio - CPP II Bauru"], [], ["Nº", "Empresas", "Valor"] ];
             empresas.forEach((e, i) => ws_data.push([i+1, e.nome, e.valor]));
             ws_data.push(["", "TOTAL M.O.I", empresas.reduce((a,b)=>a+b.valor,0)]);
-            ws_data.push([""], ["RELAÇÃO DE PAGAMENTOS"]);
+            ws_data.push([""], ["RELATÓRIO DE PAGAMENTOS"]);
             document.querySelectorAll("#tab-rateio tr").forEach(row => {
                 const rowD = []; row.querySelectorAll("th, td").forEach(cell => rowD.push(cell.innerText));
                 ws_data.push(rowD);
             });
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Rateio");
-            XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Rateio"); XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
         }
         window.onload = carregar;
     </script>
