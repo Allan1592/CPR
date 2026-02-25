@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rateio - CPP II Bauru</title>
+    <title>SISTEMA DE RATEIO - CPP II de Bauru</title>
     
     <link rel="icon" type="image/png" href="icone.png">
     
@@ -50,11 +50,6 @@
         .btn-std:hover { opacity: 0.9; }
         .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 2px 5px; }
         .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; font-weight: bold; }
-
-        /* Orientações */
-        .card-info { background: #fff; border-left: 5px solid var(--azul); padding: 15px; border-radius: 8px; margin-top: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .card-info h4 { margin: 0 0 10px 0; color: var(--azul); display: flex; align-items: center; }
-        .card-info ul { padding-left: 20px; margin: 0; font-size: 0.9rem; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -68,41 +63,26 @@
     <div class="container">
         <section id="tela-menu" class="tela active" style="background:none; box-shadow:none; padding:0;">
             <div class="dashboard-grid">
-                <button class="btn-dash" style="background:var(--verde)" onclick="navegar('tela-empresas')">
-                    <i class="fa fa-building"></i>EMPRESAS
-                </button>
-                <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')">
-                    <i class="fa fa-users"></i>FUNCIONÁRIOS
-                </button>
-                <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')">
-                    <i class="fa fa-file-invoice-dollar"></i>RELATÓRIO
-                </button>
-            </div>
-
-            <div class="card-info">
-                <h4><i class="fa fa-info-circle" style="margin-right:10px;"></i> Orientações de Preenchimento</h4>
-                <ul>
-                    <li><b>Empresas:</b> Selecione o mês/ano e cole os dados (Nome [TAB] Valor).</li>
-                    <li><b>Funcionários:</b> Importe a lista (Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus).</li>
-                    <li><b>Relatório:</b> Confira os totais no espelho antes de gerar o PDF/Excel final.</li>
-                </ul>
+                <button class="btn-dash" style="background:var(--verde)" onclick="navegar('tela-empresas')"><i class="fa fa-building"></i>EMPRESAS</button>
+                <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')"><i class="fa fa-users"></i>FUNCIONÁRIOS</button>
+                <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')"><i class="fa fa-file-invoice-dollar"></i>RELATÓRIO</button>
             </div>
         </section>
 
         <section id="tela-empresas" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar ao Menu</button>
-            <h3 style="color:var(--verde); border-bottom: 1px solid #eee; padding-bottom: 10px;">Lançamento M.O.I (Receitas)</h3>
-            <textarea id="txt-empresas" placeholder="Cole aqui os dados do Excel (Empresa e Valor)"></textarea>
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 style="color:var(--verde)">Lançamento M.O.I</h3>
+            <textarea id="txt-empresas" placeholder="Copie do Excel e cole aqui"></textarea>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                 <select id="sel-mes-referencia" class="sel-mes">
-                    <option value="">Mês de Referência</option>
+                    <option value="">Mês</option>
                     <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
                     <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
                     <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
                 </select>
-                <select id="sel-ano-referencia" class="sel-mes"><option>2025</option><option selected>2026</option><option>2027</option></select>
-                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar Dados</button>
-                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
+                <select id="sel-ano-referencia" class="sel-mes"><option>2025</option><option selected>2026</option></select>
+                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar</button>
+                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-empresas">
@@ -110,17 +90,15 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <p style="text-align: right; font-weight: bold; color: var(--verde); font-size: 1.1rem;">TOTAL M.O.I: <span id="total-emp-display">R$ 0,00</span></p>
+            <p style="text-align: right; font-weight: bold; color: var(--verde);">TOTAL M.O.I: <span id="total-emp-display">R$ 0,00</span></p>
         </section>
 
         <section id="tela-cadastro" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar ao Menu</button>
-            <h3 style="color:var(--laranja); border-bottom: 1px solid #eee; padding-bottom: 10px;">Gestão de Funcionários</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 style="color:var(--laranja)">Gestão de Funcionários</h3>
             <textarea id="txt-funcs" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
-            <div style="margin-bottom: 15px;">
-                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar Lista</button>
-                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho); margin-left: 10px;">Limpar Tudo</button>
-            </div>
+            <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar</button>
+            <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
             <div class="table-wrapper">
                 <table id="tab-funcs">
                     <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Bônus</th><th class="text-center">Ações</th></tr></thead>
@@ -130,18 +108,16 @@
         </section>
 
         <section id="tela-pagamentos" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar ao Menu</button>
-            <h3 id="titulo-pagamentos" style="color:var(--azul); margin: 15px 0;">Relação de Pagamentos</h3>
-            
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 id="titulo-pagamentos" style="color:var(--azul)">Relação de Pagamentos</h3>
             <div class="resumo-grid">
-                <div class="card-resumo"><small>Total Bruto M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">R$ 0,00</b></div>
-                <div class="card-resumo"><small>Soma Total Dias</small><b id="esp-total-dias">0</b></div>
-                <div class="card-resumo"><small>Valor do Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">R$ 0,00</b></div>
+                <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">R$ 0,00</b></div>
+                <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
+                <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">R$ 0,00</b></div>
             </div>
-
-            <div style="text-align: right; margin-bottom: 10px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
-                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> PDF Oficial</button>
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-rateio">
@@ -153,12 +129,12 @@
     </div>
 
     <div id="modal-edicao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:25px; border-radius:8px; width:340px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-            <h4 id="titulo-modal" style="margin-top:0;">Editar Informações</h4>
+        <div style="background:white; padding:25px; border-radius:8px; width:340px;">
+            <h4 id="titulo-modal">Editar</h4>
             <div id="corpo-modal" style="display:flex; flex-direction:column; gap:10px;"></div>
             <div style="margin-top:20px; text-align:right;">
                 <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button>
-                <button onclick="fecharModal()" class="btn-std" style="background:#666; margin-left:5px;">Sair</button>
+                <button onclick="fecharModal()" class="btn-std" style="background:#666;">Sair</button>
             </div>
         </div>
     </div>
@@ -175,7 +151,7 @@
         }
 
         function importar(tipo) {
-            if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Por favor, selecione o Mês de Referência!");
+            if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
             if(!txt) return;
             txt.split('\n').forEach(linha => {
@@ -196,10 +172,7 @@
             empresas.forEach((e, i) => {
                 total += e.valor;
                 tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
-                <td class="text-center">
-                    <button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
-                    <button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
-                </td></tr>`;
+                <td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`;
             });
             document.getElementById('total-emp-display').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
         }
@@ -208,27 +181,21 @@
             const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
             funcionarios.forEach((f, i) => {
                 tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.bonus}</td>
-                <td class="text-center">
-                    <button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
-                    <button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
-                </td></tr>`;
+                <td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`;
             });
         }
 
         function calcular() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            document.getElementById('titulo-pagamentos').innerText = `Relação de Pagamentos - ${mes || 'Mês não definido'} / ${ano}`;
-
+            document.getElementById('titulo-pagamentos').innerText = `Relação de Pagamentos - ${mes} / ${ano}`;
             const bruto = empresas.reduce((a, b) => a + b.valor, 0);
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const qtdBonus = funcionarios.filter(f => f.bonus === 'Sim').length;
             const valorDia = totalDias > 0 ? (bruto - (qtdBonus * 200)) / totalDias : 0;
-
             document.getElementById('esp-total-moi').innerText = "R$ " + bruto.toLocaleString('pt-BR',{minimumFractionDigits:2});
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR',{minimumFractionDigits:4});
-
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
                 const total = (f.dias * valorDia) + (f.bonus === 'Sim' ? 200 : 0);
@@ -240,9 +207,9 @@
             tipoEditando = tipo; idEditando = i;
             const corpo = document.getElementById('corpo-modal');
             if(tipo === 'emp') {
-                corpo.innerHTML = `Nome: <input id="ed-1" style="padding:5px" value="${empresas[i].nome}"> Valor: <input id="ed-2" style="padding:5px" type="number" value="${empresas[i].valor}">`;
+                corpo.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
             } else {
-                corpo.innerHTML = `Nome: <input id="ed-1" style="padding:5px" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" style="padding:5px" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" style="padding:5px" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4" style="padding:5px"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
+                corpo.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
             }
             document.getElementById('modal-edicao').style.display = 'flex';
         }
@@ -263,10 +230,10 @@
         }
 
         function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
-        function excluir(tipo, i) { if(confirm("Deseja excluir este registro?")) { tipo === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
+        function excluir(tipo, i) { if(confirm("Excluir?")) { tipo === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
         async function salvar(acao, dados) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) }); }
-        async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) { console.log("Erro ao carregar dados."); } }
-        async function limparRemoto(acao) { if(confirm("Tem certeza que deseja apagar todos os dados desta lista?")) { acao === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(acao, []); } }
+        async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) {} }
+        async function limparRemoto(acao) { if(confirm("Limpar tudo?")) { acao === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(acao, []); } }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
@@ -274,21 +241,22 @@
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
             const dataRef = `${mes} / ${ano}`;
-            
+            const totalMoi = empresas.reduce((a, b) => a + b.valor, 0);
+
             doc.setFontSize(11);
             doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
             doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
 
-            doc.setFillColor(45, 147, 68);
-            doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12);
-            doc.setTextColor(255, 255, 255);
-            doc.text("Relatório de Rateio", 18, 34.5);
-            doc.text(dataRef, 279, 34.5, { align: "right" });
+            doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
+            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
+            doc.text("Relatório de Rateio", 18, 34.5); doc.text(dataRef, 279, 34.5, { align: "right" });
             doc.setTextColor(0, 0, 0);
 
+            // CORREÇÃO: ADICIONANDO A LINHA DE TOTAL NA TABELA DE EMPRESAS
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, `R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`]);
+            dadosEmpresas.push(['', {content: 'TOTAL M.O.I', styles: {fontStyle: 'bold', halign: 'right'}}, {content: `R$ ${totalMoi.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, styles: {fontStyle: 'bold', halign: 'center'}}]);
+
             doc.autoTable({
                 head: [['Nº', 'Empresas', 'Valor']],
                 body: dadosEmpresas,
@@ -308,17 +276,13 @@
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' } }
             });
 
-            let finalY = doc.lastAutoTable.finalY + 20;
-            if (finalY > 165) { doc.addPage(); finalY = 30; }
-
-            doc.setFontSize(10);
-            doc.text("__________________________________________", 148.5, finalY, { align: "center" });
-            doc.text("CARLOS HENRIQUE GREJO", 148.5, finalY + 5, { align: "center" });
-            doc.text("Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional", 148.5, finalY + 10, { align: "center" });
-            
-            doc.text("__________________________________________", 148.5, finalY + 30, { align: "center" });
-            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, finalY + 35, { align: "center" });
-            doc.text("Chefe de Departamento", 148.5, finalY + 40, { align: "center" });
+            let fY = doc.lastAutoTable.finalY + 20; if (fY > 165) { doc.addPage(); fY = 30; }
+            doc.text("__________________________________________", 148.5, fY, { align: "center" });
+            doc.text("CARLOS HENRIQUE GREJO", 148.5, fY + 5, { align: "center" });
+            doc.text("Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional", 148.5, fY + 10, { align: "center" });
+            doc.text("__________________________________________", 148.5, fY + 30, { align: "center" });
+            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, fY + 35, { align: "center" });
+            doc.text("Chefe de Departamento", 148.5, fY + 40, { align: "center" });
 
             doc.save(`Rateio_${dataRef.replace(/ \/ /g, '_')}.pdf`);
         }
@@ -327,19 +291,17 @@
             const dataRef = `${document.getElementById('sel-mes-referencia').value}_${document.getElementById('sel-ano-referencia').value}`;
             const ws_data = [ ["Relatório de Rateio - CPP II Bauru"], [], ["Nº", "Empresas", "Valor"] ];
             empresas.forEach((e, i) => ws_data.push([i+1, e.nome, e.valor]));
+            ws_data.push(["", "TOTAL M.O.I", empresas.reduce((a,b)=>a+b.valor,0)]);
             ws_data.push([""], ["RELAÇÃO DE PAGAMENTOS"]);
-            const rows = document.querySelectorAll("#tab-rateio tr");
-            rows.forEach(row => {
-                const rowData = [];
-                row.querySelectorAll("th, td").forEach(cell => rowData.push(cell.innerText));
-                ws_data.push(rowData);
+            document.querySelectorAll("#tab-rateio tr").forEach(row => {
+                const rowD = []; row.querySelectorAll("th, td").forEach(cell => rowD.push(cell.innerText));
+                ws_data.push(rowD);
             });
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Rateio");
             XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
         }
-
         window.onload = carregar;
     </script>
 </body>
