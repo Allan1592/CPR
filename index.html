@@ -229,7 +229,7 @@
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
             doc.autoTable({ 
                 head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 },
-                headStyles: { halign: 'center' }, // Centraliza cabeçalho
+                headStyles: { halign: 'center' },
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' } } 
             });
 
@@ -243,6 +243,37 @@
                 headStyles: { fillColor: [45, 147, 68], halign: 'center' },
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
             });
+
+            // DATA E ASSINATURAS DEFINITIVAS
+            const finalY = doc.lastAutoTable.finalY + 20;
+            const hoje = new Date();
+            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+            const dataExtensa = `Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`;
+
+            doc.setFontSize(9);
+            doc.text(dataExtensa, 148.5, finalY, { align: 'center' });
+
+            const assinaturaY = finalY + 15;
+            
+            // Lado Esquerdo - CARLOS HENRIQUE GREJO
+            doc.setFont("helvetica", "bold");
+            doc.text("CARLOS HENRIQUE GREJO", 65, assinaturaY, { align: 'center' });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.text("Chefe de Serviço de Formação Educacional,", 65, assinaturaY + 4, { align: 'center' });
+            doc.text("trabalho e Capacitação Profissional", 65, assinaturaY + 8, { align: 'center' });
+
+            // Centro - REVISE
+            doc.setFontSize(9);
+            doc.text("REVISE: ............................", 148.5, assinaturaY + 4, { align: 'center' });
+
+            // Lado Direito - FLÁVIO ANDRÉ FERREIRA OJAS
+            doc.setFont("helvetica", "bold");
+            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 225, assinaturaY, { align: 'center' });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.text("Chefe de Departamento", 225, assinaturaY + 4, { align: 'center' });
+
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
