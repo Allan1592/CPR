@@ -4,61 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Rateio - CPP II Bauru</title>
-    
     <link rel="icon" type="image/png" href="URL_DA_SUA_IMAGEM_AQUI">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza: #f4f7f6; }
+        :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza-claro: #f4f7f6; }
         
-        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza); margin: 0; color: #333; transition: 0.5s; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; }
+        .container { max-width: 1150px; margin: 0 auto; padding: 20px; }
         
-        /* Estilos de Fundo Dinâmicos */
-        .bg-menu { background: var(--cinza); }
-        .bg-empresas { background: var(--verde); }
-        .bg-cadastro { background: var(--laranja); }
-        .bg-pagamentos { background: var(--azul); }
-
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        
-        /* Logo e Título */
-        .header-container { text-align: center; padding: 20px; }
+        /* Cabeçalho */
+        .header-container { text-align: center; padding: 20px; display: block; }
         .logo-placeholder { width: 100px; height: auto; margin-bottom: 10px; }
         
-        .tela { display: none; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-top: 20px; }
+        .tela { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
         .active { display: block; }
 
-        /* Dashboard Menu */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
-        .btn-dash { height: 180px; border: none; border-radius: 20px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
-        .btn-dash:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.2); }
+        /* Dashboard */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+        .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.2rem; }
+        .btn-dash i { font-size: 2.5rem; margin-bottom: 10px; }
+        .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); }
 
-        /* Card de Orientações */
-        .card-info { background: #fff; border-left: 5px solid var(--azul); padding: 20px; border-radius: 10px; margin-top: 40px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .card-info h4 { margin-top: 0; color: var(--azul); display: flex; align-items: center; }
-        .card-info ul { padding-left: 20px; font-size: 0.95rem; line-height: 1.6; }
-
-        /* Tabelas e Inputs */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #f8f9fa; padding: 12px; border-bottom: 2px solid #ddd; }
-        .text-center { text-align: center !important; }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
-        textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
-        .btn-std { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
-        .btn-std:hover { opacity: 0.8; }
-        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; }
+        /* Tabelas Compactas e Congeladas */
+        .table-wrapper { max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
         
-        .sel-mes { padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; margin-right: 10px; }
+        thead th { 
+            position: sticky; top: 0; background: #f8f9fa; z-index: 10;
+            padding: 6px 10px; border-bottom: 2px solid #ccc;
+        }
+        
+        td { padding: 4px 10px; border-bottom: 1px solid #eee; }
+        .text-center { text-align: center !important; }
+
+        /* Orientações */
+        .card-info { background: #fff; border-left: 5px solid var(--azul); padding: 15px; border-radius: 8px; margin-top: 30px; }
+        .card-info h4 { margin: 0 0 10px 0; color: var(--azul); }
+        .card-info ul { padding-left: 20px; margin: 0; font-size: 0.9rem; }
+
+        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; }
+        .btn-std { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
+        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1rem; padding: 2px 5px; }
+        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; }
     </style>
 </head>
-<body class="bg-menu">
+<body>
 
-    <div class="header-container">
+    <div id="main-header" class="header-container">
         <img src="https://via.placeholder.com/150x80?text=LOGO+SAP" alt="Logo SAP" class="logo-placeholder">
         <h1 style="margin:0; color:#2c3e50;">Sistema de Rateio</h1>
         <p style="color:#666;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
@@ -67,111 +63,100 @@
     <div class="container">
         <section id="tela-menu" class="tela active" style="background:none; box-shadow:none; padding:0;">
             <div class="dashboard-grid">
-                <button class="btn-dash" style="background:var(--verde)" onclick="navegar('tela-empresas')">
-                    <i class="fa fa-building"></i>GESTÃO DE EMPRESAS
-                </button>
-                <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')">
-                    <i class="fa fa-users"></i>GESTÃO DE FUNCIONÁRIOS
-                </button>
-                <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')">
-                    <i class="fa fa-file-invoice-dollar"></i>RELATÓRIO FINAL
-                </button>
+                <button class="btn-dash" style="background:var(--verde)" onclick="navegar('tela-empresas')"><i class="fa fa-building"></i>EMPRESAS</button>
+                <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')"><i class="fa fa-users"></i>FUNCIONÁRIOS</button>
+                <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')"><i class="fa fa-file-invoice-dollar"></i>RELATÓRIO</button>
             </div>
-
             <div class="card-info">
-                <h4><i class="fa fa-info-circle" style="margin-right:10px;"></i> ORIENTAÇÕES DE PREENCHIMENTO</h4>
+                <h4><i class="fa fa-info-circle"></i> Orientações</h4>
                 <ul>
-                    <li><b>1º Passo:</b> Acesse "Gestão de Empresas", selecione o <b>Mês/Ano</b> e cole os dados (Empresa [TAB] Valor).</li>
-                    <li><b>2º Passo:</b> No menu "Gestão de Funcionários", importe a lista de quem trabalhou (Matrícula [TAB] Nome [TAB] Dias...).</li>
-                    <li><b>3º Passo:</b> Use o botão "Editar" (ícone lápis) para ajustar bônus ou faltas caso necessário.</li>
-                    <li><b>4º Passo:</b> Vá em "Relatório Final" para conferir os cálculos e exportar o PDF oficial assinado.</li>
+                    <li>Cadastre as empresas e selecione o mês primeiro.</li>
+                    <li>Importe a lista de funcionários com matrícula, nome e dias.</li>
+                    <li>Confira o relatório final e gere o PDF com as assinaturas.</li>
                 </ul>
             </div>
         </section>
 
         <section id="tela-empresas" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666; margin-bottom:20px;">← Voltar ao Menu</button>
-            <h2 style="color:var(--verde)">Lançamento M.O.I (Receitas)</h2>
-            <textarea id="txt-empresas" placeholder="Dica: Copie do Excel e cole aqui (Empresa e Valor)"></textarea>
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
+            <h3 style="color:var(--verde); margin: 15px 0;">Lançamento M.O.I</h3>
+            <textarea id="txt-empresas" placeholder="Empresa [TAB] Valor"></textarea>
+            <div style="margin: 10px 0; display: flex; gap: 8px; align-items: center;">
                 <select id="sel-mes-referencia" class="sel-mes">
                     <option value="">Selecione o Mês</option>
                     <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
                     <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
                     <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
                 </select>
-                <select id="sel-ano-referencia" class="sel-mes">
-                    <option>2025</option><option selected>2026</option><option>2027</option>
-                </select>
-                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">PROCESSAR DADOS</button>
-                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">LIMPAR TUDO</button>
+                <select id="sel-ano-referencia" class="sel-mes"><option>2025</option><option selected>2026</option></select>
+                <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar</button>
+                <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
             </div>
-            <table id="tab-empresas">
-                <thead><tr><th class="text-center">Nº</th><th>Empresa</th><th class="text-center">Valor</th><th class="text-center">Ações</th></tr></thead>
-                <tbody></tbody>
-                <tfoot><tr><td colspan="2" align="right"><b>TOTAL M.O.I:</b></td><td id="total-emp" class="text-center" style="font-weight:bold; color:green;">R$ 0,00</td><td></td></tr></tfoot>
-            </table>
+            <div class="table-wrapper">
+                <table id="tab-empresas">
+                    <thead><tr><th class="text-center">Nº</th><th>Empresa</th><th class="text-center">Valor</th><th class="text-center">Ações</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <p style="text-align: right; font-weight: bold; color: var(--verde);">TOTAL M.O.I: <span id="total-emp">R$ 0,00</span></p>
         </section>
 
         <section id="tela-cadastro" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666; margin-bottom:20px;">← Voltar ao Menu</button>
-            <h2 style="color:var(--laranja)">Cadastro de Funcionários</h2>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
+            <h3 style="color:var(--laranja); margin: 15px 0;">Gestão de Funcionários</h3>
             <textarea id="txt-funcs" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
-            <div style="margin-bottom:20px;">
-                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">IMPORTAR LISTA</button>
-                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho); margin-left:10px;">LIMPAR TUDO</button>
+            <div style="margin-bottom: 15px;">
+                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar</button>
+                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
             </div>
-            <table id="tab-funcs">
-                <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Bônus</th><th class="text-center">Ações</th></tr></thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-wrapper">
+                <table id="tab-funcs">
+                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Bônus</th><th class="text-center">Ações</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </section>
 
         <section id="tela-pagamentos" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666; margin-bottom:20px;">← Voltar ao Menu</button>
-            <h2 style="color:var(--azul)">Relatório de Rateio Final</h2>
-            <div style="text-align:right; margin-bottom:20px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
-                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> Gerar PDF Oficial</button>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
+            <h3 style="color:var(--azul); margin: 15px 0;">Relação de Pagamentos</h3>
+            <div style="text-align: right; margin-bottom: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+                <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
+                <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
             </div>
-            <table id="tab-rateio">
-                <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Dias</th><th class="text-center">Bônus</th><th class="text-center">Total Final</th></tr></thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-wrapper">
+                <table id="tab-rateio">
+                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Dias</th><th class="text-center">Bônus</th><th class="text-center">Total Final</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </section>
     </div>
 
-    <div id="modal-edicao">
-        <div class="modal-content">
-            <h3 id="titulo-modal">Editar Informações</h3>
+    <div id="modal-edicao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:20px; border-radius:8px; width:320px;">
+            <h4 id="titulo-modal">Editar</h4>
             <div id="corpo-modal"></div>
-            <div style="margin-top:20px; text-align:right;">
-                <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">SALVAR</button>
-                <button onclick="fecharModal()" class="btn-std" style="background:#666; margin-left:5px;">CANCELAR</button>
+            <div style="margin-top:15px; text-align:right;">
+                <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button>
+                <button onclick="fecharModal()" class="btn-std" style="background:#666;">Sair</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- TODA A LÓGICA DE CÁLCULO E EXPORTAÇÃO (CÓDIGO 3) PERMANECE AQUI ---
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxqVP6O_ekunENu_IF5hQivjHlgit00ATawdDSF9A_d1JdgRdixf0LyxRViyz7xPmIQ/exec";
         let empresas = [], funcionarios = [], idEditando = null, tipoEditando = '';
 
         function navegar(id) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            
-            // Troca o fundo do Body conforme a tela
-            document.body.className = '';
-            if(id === 'tela-menu') document.body.classList.add('bg-menu');
-            if(id === 'tela-empresas') document.body.classList.add('bg-empresas');
-            if(id === 'tela-cadastro') document.body.classList.add('bg-cadastro');
-            if(id === 'tela-pagamentos') { document.body.classList.add('bg-pagamentos'); calcular(); }
+            // Esconde cabeçalho se não for o menu
+            document.getElementById('main-header').style.display = (id === 'tela-menu' ? 'block' : 'none');
+            if(id === 'tela-pagamentos') calcular();
         }
 
-        // ... [Manter funções importar, renderEmp, renderFunc, calcular, abrirEdicao, salvarEdicao, excluir, carregar, salvar de acordo com o Código 3 anterior] ...
-        
-        // Re-incluindo as funções essenciais para o funcionamento completo:
+        // ... [Lógica de processamento e exportação idêntica ao Código 3 anterior, garantindo as centralizações e regras de negócio] ...
         function importar(tipo) {
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
@@ -229,9 +214,9 @@
             tipoEditando = tipo; idEditando = i;
             const corpo = document.getElementById('corpo-modal');
             if(tipo === 'emp') {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
+                corpo.innerHTML = `Nome: <input id="ed-1" style="width:100%" value="${empresas[i].nome}"> Valor: <input id="ed-2" style="width:100%" type="number" value="${empresas[i].valor}">`;
             } else {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
+                corpo.innerHTML = `Nome: <input id="ed-1" style="width:100%" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" style="width:100%" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" style="width:100%" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4" style="width:100%"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
             }
             document.getElementById('modal-edicao').style.display = 'flex';
         }
@@ -257,7 +242,6 @@
         async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) { } }
         async function limparRemoto(acao) { if(confirm("Apagar TUDO?")) { acao === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(acao, []); } }
 
-        // --- EXPORTAÇÕES PDF/EXCEL (CÓDIGO 3) ---
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
