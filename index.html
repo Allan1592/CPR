@@ -244,7 +244,6 @@
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
             });
 
-            // DATA E ASSINATURAS HIERÁRQUICAS (UMA ABAIXO DA OUTRA)
             let currentY = doc.lastAutoTable.finalY + 25;
             const hoje = new Date();
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -254,18 +253,16 @@
             doc.setFont("helvetica", "normal");
             doc.text(dataExtensa, 148.5, currentY, { align: 'center' });
 
-            currentY += 20; // Espaço para a primeira assinatura
+            currentY += 20;
 
-            // 1º CARLOS HENRIQUE GREJO (Superior)
             doc.setFont("helvetica", "bold");
             doc.text("CARLOS HENRIQUE GREJO", 148.5, currentY, { align: 'center' });
             doc.setFont("helvetica", "normal");
             doc.setFontSize(9);
             doc.text("Chefe de Serviço de Formação Educacional, trabalho e Capacitação Profissional", 148.5, currentY + 5, { align: 'center' });
 
-            currentY += 20; // Espaço entre as assinaturas
+            currentY += 20;
 
-            // 2º FLÁVIO ANDRÉ FERREIRA OJAS (Abaixo)
             doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
             doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, currentY, { align: 'center' });
@@ -276,17 +273,25 @@
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
+        // FUNÇÃO ATUALIZADA: EXPORTA APENAS DADOS DOS FUNCIONÁRIOS
         function exportarExcel() {
-            const dataRef = `${document.getElementById('sel-mes-referencia').value}_${document.getElementById('sel-ano-referencia').value}`;
-            const ws_data = [ ["Relatório de Rateio - CPP II Bauru"], [], ["Nº", "Empresas", "Valor"] ];
-            empresas.forEach((e, i) => ws_data.push([i+1, e.nome, fmt(e.valor)]));
-            ws_data.push([""], ["RELATÓRIO DE PAGAMENTOS"], ["Matrícula", "Nome", "Setor", "Dias", "Total Final"]);
+            const mes = document.getElementById('sel-mes-referencia').value;
+            const ano = document.getElementById('sel-ano-referencia').value;
+            
+            // Cabeçalhos originais da tabela de pagamentos
+            const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
+            
+            // Adiciona apenas as linhas dos funcionários extraídas da tabela de rateio
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => {
                 ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
             });
-            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Rateio"); XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
+
+            const wb = XLSX.utils.book_new(); 
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Funcionários"); 
+            XLSX.writeFile(wb, `Lista_Pagamentos_${mes}_${ano}.xlsx`);
         }
+
         window.onload = carregar;
     </script>
 </body>
