@@ -13,41 +13,29 @@
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza-claro: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
-        
         .container { width: 95%; max-width: 1200px; margin: 20px auto; flex: 1; }
         .header-container { text-align: center; padding: 10px; }
         .logo-placeholder { width: 100px; height: auto; margin-bottom: 5px; border-radius: 10px; }
-        
         .tela { display: none; background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .active { display: block; }
-        
-        /* ESTRUTURA DOS BOTÕES DO MENU (HORIZONTAL) */
         .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
         @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
-        
         .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.2rem; }
         .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-        
         .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .card-resumo { background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; }
         .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .card-resumo b { font-size: 1.3rem; color: var(--azul); }
-        
-        /* CONGELAMENTO E ROLAGEM (RESTAURADOS) */
         .table-wrapper { width: 100%; max-height: 480px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
-        
         textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 6px; padding: 12px; font-size: 0.9rem; margin-bottom: 15px; font-family: inherit; resize: vertical; box-sizing: border-box; }
         .btn-std { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
         .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; }
-        
         footer { text-align: center; padding: 25px; color: #777; font-size: 0.9rem; margin-top: auto; }
-        footer b { color: #333; }
-
         #modal-edicao { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center; }
         .modal-content { background:white; padding:25px; border-radius:8px; width:350px; }
         .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
@@ -104,7 +92,7 @@
             </div>
             <div class="table-wrapper">
                 <table id="tab-funcs">
-                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th>Setor</th><th class="text-center">Ações</th></tr></thead>
+                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Ações</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -124,7 +112,7 @@
             </div>
             <div class="table-wrapper">
                 <table id="tab-rateio">
-                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th>Setor</th><th class="text-center">Dias</th><th class="text-center">Total Final</th></tr></thead>
+                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Dias</th><th class="text-center">Total Final</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -146,7 +134,6 @@
             if(id === 'tela-pagamentos') calcular();
         }
 
-        // FUNÇÃO DE FORMATAÇÃO FORÇADA PARA 2 CASAS SEM O R$
         function fmt(valor) {
             return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
@@ -184,7 +171,7 @@
         function renderFunc() {
             const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
             funcionarios.forEach((f, i) => { 
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td>${f.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
             });
         }
 
@@ -195,15 +182,13 @@
             const bruto = empresas.reduce((a, b) => a + b.valor, 0);
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
-            
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
-            
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
                 const totalFunc = f.dias * valorDia;
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td>${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
             });
         }
 
@@ -242,16 +227,20 @@
             doc.setTextColor(0, 0, 0); doc.text(`Referência: ${mes} / ${ano}`, 14, 42);
 
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
-            doc.autoTable({ head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 } });
+            doc.autoTable({ 
+                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 },
+                columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' } } 
+            });
 
             doc.setFont("helvetica", "bold"); doc.text("Relatório de Pagamentos", 14, doc.lastAutoTable.finalY + 10);
-            
             const headRateio = [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']];
             const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => {
                 return Array.from(tr.querySelectorAll("td")).map(td => td.innerText);
             });
-
-            doc.autoTable({ head: headRateio, body: bodyRateio, startY: doc.lastAutoTable.finalY + 15, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [45, 147, 68] } });
+            doc.autoTable({ 
+                head: headRateio, body: bodyRateio, startY: doc.lastAutoTable.finalY + 15, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [45, 147, 68] },
+                columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
+            });
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
