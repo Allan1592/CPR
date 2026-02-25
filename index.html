@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rateio v2.5 - Código 2</title>
+    <title>Sistema de Rateio v3.0 - Código 3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,6 +29,7 @@
         #modal-edicao { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
         .modal-content { background:white; padding:20px; border-radius:10px; width:350px; }
         .modal-content input, .modal-content select { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; margin-right: 10px; font-weight: bold; background: #fff; }
     </style>
 </head>
 <body>
@@ -51,7 +52,20 @@
             <button onclick="navegar('tela-menu')">← Voltar</button>
             <h3>Gerenciar Empresas</h3>
             <textarea id="txt-empresas" placeholder="Empresa [TAB] Valor"></textarea>
-            <div style="margin-bottom:15px;">
+            <div style="margin-bottom:15px; display: flex; align-items: center;">
+                <select id="sel-mes-referencia" class="sel-mes">
+                    <option value="">Selecione o Mês Ref.</option>
+                    <option value="Janeiro">Janeiro</option><option value="Fevereiro">Fevereiro</option>
+                    <option value="Março">Março</option><option value="Abril">Abril</option>
+                    <option value="Maio">Maio</option><option value="Junho">Junho</option>
+                    <option value="Julho">Julho</option><option value="Agosto">Agosto</option>
+                    <option value="Setembro">Setembro</option><option value="Outubro">Outubro</option>
+                    <option value="Novembro">Novembro</option><option value="Dezembro">Dezembro</option>
+                </select>
+                <select id="sel-ano-referencia" class="sel-mes">
+                    <option value="2025">2025</option><option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                </select>
                 <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar</button>
                 <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho); margin-left:10px;">Limpar Planilha</button>
             </div>
@@ -108,7 +122,6 @@
     </div>
 
     <script>
-        // Mantenha o seu URL original aqui
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxqVP6O_ekunENu_IF5hQivjHlgit00ATawdDSF9A_d1JdgRdixf0LyxRViyz7xPmIQ/exec";
         let empresas = [], funcionarios = [], idEditando = null, tipoEditando = '';
 
@@ -120,8 +133,15 @@
         }
 
         function importar(tipo) {
+            // Validação de Mês Obrigatória no Código 3
+            if(tipo === 'emp') {
+                const mes = document.getElementById('sel-mes-referencia').value;
+                if(!mes) return alert("ERRO: Selecione o Mês de Referência antes de processar!");
+            }
+
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
             if(!txt) return;
+            
             txt.split('\n').forEach(linha => {
                 const c = linha.split('\t');
                 if(tipo === 'emp' && c.length >= 2) {
@@ -163,10 +183,12 @@
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const qtdBonus = funcionarios.filter(f => f.bonus === 'Sim').length;
             const valorDia = totalDias > 0 ? (bruto - (qtdBonus * 200)) / totalDias : 0;
+            
             document.getElementById('res-total-bruto').innerText = "R$ " + bruto.toLocaleString('pt-BR',{minimumFractionDigits:2});
             document.getElementById('res-qtd').innerText = funcionarios.length;
             document.getElementById('res-dias').innerText = totalDias;
             document.getElementById('res-vdia').innerText = "R$ " + valorDia.toLocaleString('pt-BR',{minimumFractionDigits:4});
+
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
                 const total = (f.dias * valorDia) + (f.bonus === 'Sim' ? 200 : 0);
@@ -204,61 +226,101 @@
         function excluir(tipo, i) { if(confirm("Deseja excluir?")) { tipo === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
         async function limparRemoto(acao) { if(confirm("Apagar TUDO na planilha?")) { acao === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(acao, []); } }
         async function salvar(acao, dados) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) }); }
-        async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) { console.log("Carga falhou"); } }
+        
+        async function carregar() { 
+            try { 
+                const res = await fetch(URL_SCRIPT); 
+                const d = await res.json(); 
+                empresas = d.empresas || []; funcionarios = d.funcionarios || []; 
+                renderEmp(); renderFunc(); 
+            } catch(e) { console.log("Carga falhou"); } 
+        }
 
-        // --- NOVAS FUNÇÕES DE EXPORTAÇÃO (CÓDIGO 2) ---
+        // --- EXPORTAÇÃO CÓDIGO 3 (PDF COM EMPRESAS + FUNCIONÁRIOS) ---
         
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-            const dataRef = "Fevereiro / 2026";
+            const mes = document.getElementById('sel-mes-referencia').value || "Mês não selecionado";
+            const ano = document.getElementById('sel-ano-referencia').value;
+            const dataRef = `${mes} / ${ano}`;
             
-            // Cabeçalho Centralizado
+            // Cabeçalho
             doc.setFontSize(11);
-            doc.text("Secretaria da Administração Penitenciária", 148.5, 15, { align: "center" });
-            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 21, { align: "center" });
-            doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 27, { align: "center" });
+            doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
+            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
+            doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
 
-            // Linha de Título e Referência
             doc.setFontSize(10);
-            doc.text("Relatório de Rateio", 14, 40);
-            doc.text(dataRef, 283, 40, { align: "right" });
+            doc.text("Relatório de Rateio", 14, 32);
+            doc.text(dataRef, 283, 32, { align: "right" });
+
+            // 1ª TABELA: EMPRESAS
+            doc.setFontSize(9);
+            doc.text("1. RECEITAS (EMPRESAS)", 14, 38);
+            
+            const dadosEmpresas = empresas.map(e => [e.nome, `R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`]);
+            const totalBruto = empresas.reduce((a,b) => a+b.valor, 0);
+            dadosEmpresas.push([{content: 'TOTAL ARRECADADO', styles: {fontStyle: 'bold'}}, {content: `R$ ${totalBruto.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, styles: {fontStyle: 'bold'}}]);
 
             doc.autoTable({
+                head: [['Empresa', 'Valor']],
+                body: dadosEmpresas,
+                startY: 40,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [100, 100, 100] },
+                margin: { right: 150 } // Faz a tabela ser menor na largura
+            });
+
+            // 2ª TABELA: FUNCIONÁRIOS
+            const startYFunc = doc.lastAutoTable.finalY + 10;
+            doc.text("2. DESPESAS (RATEIO FUNCIONÁRIOS)", 14, startYFunc - 2);
+            
+            doc.autoTable({
                 html: '#tab-rateio',
-                startY: 45,
+                startY: startYFunc,
                 theme: 'grid',
                 headStyles: { fillColor: [45, 147, 68] },
-                styles: { fontSize: 9 }
+                styles: { fontSize: 8 }
             });
 
             // Assinaturas
-            const finalY = doc.lastAutoTable.finalY + 25;
-            doc.setFontSize(10);
-            // 1º Chefe
+            let finalY = doc.lastAutoTable.finalY + 15;
+            if (finalY > 160) { doc.addPage(); finalY = 30; } // Evita cortar assinatura
+
             doc.text("__________________________________________", 148.5, finalY, { align: "center" });
             doc.text("CARLOS HENRIQUE GREJO", 148.5, finalY + 5, { align: "center" });
             doc.text("Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional", 148.5, finalY + 10, { align: "center" });
             
-            // 2º Chefe
-            doc.text("__________________________________________", 148.5, finalY + 30, { align: "center" });
-            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, finalY + 35, { align: "center" });
-            doc.text("Chefe de Departamento", 148.5, finalY + 40, { align: "center" });
+            doc.text("__________________________________________", 148.5, finalY + 25, { align: "center" });
+            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, finalY + 30, { align: "center" });
+            doc.text("Chefe de Departamento", 148.5, finalY + 35, { align: "center" });
 
-            doc.save(`Rateio_${dataRef.replace(' / ','_')}.pdf`);
+            doc.save(`Rateio_Completo_${dataRef.replace(' / ','_')}.pdf`);
         }
 
         function exportarExcel() {
-            const dataRef = "Fevereiro / 2026";
+            const mes = document.getElementById('sel-mes-referencia').value;
+            const ano = document.getElementById('sel-ano-referencia').value;
+            const dataRef = `${mes} / ${ano}`;
+            
             const ws_data = [
                 ["Secretaria da Administração Penitenciária"],
                 ["Coordenadoria de Execução Penal da Região Noroeste do Estado"],
                 ["CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru"],
                 [""],
-                ["Relatório de Rateio", "", "", "", "", dataRef]
+                ["Relatório de Rateio", "", "", "", "", dataRef],
+                [""],
+                ["RECEITAS (EMPRESAS)"],
+                ["Empresa", "Valor"]
             ];
             
-            // Pega dados da tabela
+            empresas.forEach(e => ws_data.push([e.nome, e.valor]));
+            ws_data.push(["TOTAL", empresas.reduce((a,b)=>a+b.valor,0)]);
+            ws_data.push([""]);
+            ws_data.push(["DESPESAS (FUNCIONÁRIOS)"]);
+            
             const rows = document.querySelectorAll("#tab-rateio tr");
             rows.forEach(row => {
                 const rowData = [];
@@ -266,16 +328,9 @@
                 ws_data.push(rowData);
             });
 
-            ws_data.push([""]);
-            ws_data.push(["", "", "CARLOS HENRIQUE GREJO"]);
-            ws_data.push(["", "", "Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional"]);
-            ws_data.push([""]);
-            ws_data.push(["", "", "FLÁVIO ANDRÉ FERREIRA OJAS"]);
-            ws_data.push(["", "", "Chefe de Departamento"]);
-
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Rateio");
+            XLSX.utils.book_append_sheet(wb, ws, "Rateio_Completo");
             XLSX.writeFile(wb, `Rateio_${dataRef.replace(' / ','_')}.xlsx`);
         }
 
