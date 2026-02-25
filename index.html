@@ -244,35 +244,34 @@
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
             });
 
-            // DATA E ASSINATURAS DEFINITIVAS
-            const finalY = doc.lastAutoTable.finalY + 20;
+            // DATA E ASSINATURAS HIERÁRQUICAS (UMA ABAIXO DA OUTRA)
+            let currentY = doc.lastAutoTable.finalY + 25;
             const hoje = new Date();
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
             const dataExtensa = `Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`;
 
-            doc.setFontSize(9);
-            doc.text(dataExtensa, 148.5, finalY, { align: 'center' });
-
-            const assinaturaY = finalY + 15;
-            
-            // Lado Esquerdo - CARLOS HENRIQUE GREJO
-            doc.setFont("helvetica", "bold");
-            doc.text("CARLOS HENRIQUE GREJO", 65, assinaturaY, { align: 'center' });
+            doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(8);
-            doc.text("Chefe de Serviço de Formação Educacional,", 65, assinaturaY + 4, { align: 'center' });
-            doc.text("trabalho e Capacitação Profissional", 65, assinaturaY + 8, { align: 'center' });
+            doc.text(dataExtensa, 148.5, currentY, { align: 'center' });
 
-            // Centro - REVISE
-            doc.setFontSize(9);
-            doc.text("REVISE: ............................", 148.5, assinaturaY + 4, { align: 'center' });
+            currentY += 20; // Espaço para a primeira assinatura
 
-            // Lado Direito - FLÁVIO ANDRÉ FERREIRA OJAS
+            // 1º CARLOS HENRIQUE GREJO (Superior)
             doc.setFont("helvetica", "bold");
-            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 225, assinaturaY, { align: 'center' });
+            doc.text("CARLOS HENRIQUE GREJO", 148.5, currentY, { align: 'center' });
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(8);
-            doc.text("Chefe de Departamento", 225, assinaturaY + 4, { align: 'center' });
+            doc.setFontSize(9);
+            doc.text("Chefe de Serviço de Formação Educacional, trabalho e Capacitação Profissional", 148.5, currentY + 5, { align: 'center' });
+
+            currentY += 20; // Espaço entre as assinaturas
+
+            // 2º FLÁVIO ANDRÉ FERREIRA OJAS (Abaixo)
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, currentY, { align: 'center' });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("Chefe de Departamento", 148.5, currentY + 5, { align: 'center' });
 
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
