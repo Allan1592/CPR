@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Rateio - CPP II Bauru</title>
+    
     <link rel="icon" type="image/png" href="icone.png">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,37 +14,50 @@
 
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza-claro: #f4f7f6; }
+        
         body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; }
         .container { max-width: 1150px; margin: 0 auto; padding: 20px; }
+        
+        /* Cabeçalho Principal */
         .header-container { text-align: center; padding: 20px; }
         .logo-placeholder { width: 120px; height: auto; margin-bottom: 10px; border-radius: 10px; }
+        
         .tela { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
         .active { display: block; }
+
+        /* Dashboard Menu */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.3rem; }
+        .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.3rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .btn-dash i { font-size: 2.8rem; margin-bottom: 12px; }
-        .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); }
+        .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+
+        /* Cards de Resumo (Espelho) */
         .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card-resumo { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; text-align: center; }
-        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.7rem; }
+        .card-resumo { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; }
         .card-resumo b { font-size: 1.15rem; color: var(--azul); }
+
+        /* Tabelas e Sticky Header */
         .table-wrapper { max-height: 480px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 8px; border-bottom: 2px solid #ccc; }
         td { padding: 6px 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
-        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; margin-bottom: 10px; }
-        .btn-std { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
+
+        /* Inputs e Botões */
+        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; }
+        .btn-std { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; transition: 0.2s; }
+        .btn-std:hover { opacity: 0.9; }
         .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 2px 5px; }
-        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; }
+        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="main-header" class="header-container">
-        <img src="icone.png" alt="Logo CPP II" class="logo-placeholder">
+        <img src="icone.png" alt="Logo CPP II Bauru" class="logo-placeholder">
         <h1 style="margin:0; color:#2c3e50;">SISTEMA DE RATEIO</h1>
-        <p style="color:#666;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
+        <p style="color:#666; margin-top:5px;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
     </div>
 
     <div class="container">
@@ -56,8 +71,8 @@
 
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
-            <h3 style="color:var(--verde)">Lançamento M.O.I</h3>
-            <textarea id="txt-empresas" placeholder="Cole os dados aqui..."></textarea>
+            <h3 style="color:var(--verde)">Lançamento M.O.I (Receitas)</h3>
+            <textarea id="txt-empresas" placeholder="Cole aqui os dados do Excel (Nome e Valor)"></textarea>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                 <select id="sel-mes-referencia" class="sel-mes">
                     <option value="">Mês</option>
@@ -100,7 +115,7 @@
                 <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
                 <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">R$ 0,00</b></div>
             </div>
-            <div style="text-align: right; margin-bottom: 10px;">
+            <div style="text-align: right; margin-bottom: 10px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
                 <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
             </div>
@@ -125,7 +140,7 @@
     </div>
 
     <script>
-        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwtkPqX5K2UGR5it93p6O5jH4NpjQ8VSnpZdZ72b1NdVIzVIqO4bE4a_ajkGwewbbGL/exec";
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfCfWVF-fIn1KLcG1yzuCTzD4tkRwL5fNWR76MFkTVysrRZBo-1AsyMnOuPBE5isia/exec";
         let empresas = [], funcionarios = [], idEditando = null, tipoEditando = '';
 
         function navegar(id) {
@@ -139,12 +154,14 @@
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
             if(!txt) return;
+
             txt.split('\n').forEach(linha => {
                 const c = linha.split('\t');
                 if(tipo === 'emp' && c.length >= 2) {
-                    const col1 = c[0].toUpperCase();
-                    // IGNORA CABEÇALHOS E LINHA DE TOTAL DO EXCEL
-                    if(col1.includes("Nº") || col1.includes("EMPRESA") || col1.includes("TOTAL")) return;
+                    const col1 = c[0].toUpperCase().trim();
+                    // FILTRO RIGOROSO: Pula cabeçalhos e a linha de Total que vem do Excel
+                    if(!isNaN(col1) || col1.includes("Nº") || col1.includes("EMPRESA") || col1.includes("TOTAL")) return;
+
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
                     if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
                 } else if(tipo === 'func' && c.length >= 4) {
