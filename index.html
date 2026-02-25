@@ -235,26 +235,76 @@
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-            const dataRef = `${document.getElementById('sel-mes-referencia').value} / ${document.getElementById('sel-ano-referencia').value}`;
+            const mes = document.getElementById('sel-mes-referencia').value || "";
+            const ano = document.getElementById('sel-ano-referencia').value;
+            const dataRef = `${mes} / ${ano}`;
+            
+            // Cabeçalho Institucional
             doc.setFontSize(11);
             doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
             doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
-            doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
-            doc.text("Relatório de Rateio", 18, 34.5); doc.text(dataRef, 279, 34.5, { align: "right" });
+
+            // Faixa Verde Relatório Rateio
+            doc.setFillColor(45, 147, 68);
+            doc.rect(14, 28, 269, 10, 'F');
+            doc.setFontSize(12);
+            doc.setTextColor(255, 255, 255);
+            doc.text("Relatório de Rateio", 18, 34.5);
+            doc.text(dataRef, 279, 34.5, { align: "right" });
             doc.setTextColor(0, 0, 0);
+
+            // 1. TABELA EMPRESAS (M.O.I)
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, `R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`]);
-            dadosEmpresas.push(['', {content: 'TOTAL M.O.I', styles: {fontStyle: 'bold', halign: 'right'}}, {content: `R$ ${empresas.reduce((a,b)=>a+b.valor,0).toLocaleString('pt-BR',{minimumFractionDigits:2})}`, styles: {fontStyle: 'bold'}}]);
-            doc.autoTable({ head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 42, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [100, 100, 100] } });
-            doc.autoTable({ html: '#tab-rateio', startY: doc.lastAutoTable.finalY + 12, theme: 'grid', headStyles: { fillColor: [45, 147, 68] }, styles: { fontSize: 8.5 } });
-            let finalY = doc.lastAutoTable.finalY + 20; if (finalY > 165) { doc.addPage(); finalY = 30; }
+            const totalMOI = empresas.reduce((a,b) => a+b.valor, 0);
+            dadosEmpresas.push(['', {content: 'TOTAL M.O.I', styles: {fontStyle: 'bold', halign: 'right'}}, {content: `R$ ${totalMOI.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, styles: {fontStyle: 'bold', halign: 'center'}}]);
+
+            doc.autoTable({
+                head: [['Nº', 'Empresas', 'Valor']],
+                body: dadosEmpresas,
+                startY: 42,
+                theme: 'grid',
+                styles: { fontSize: 8.5 },
+                headStyles: { fillColor: [100, 100, 100], halign: 'center' },
+                columnStyles: { 
+                    0: { halign: 'center', cellWidth: 15 }, // Nº Centralizado
+                    2: { halign: 'center', cellWidth: 45 }  // Valor Centralizado
+                }
+            });
+
+            // 2. TABELA PAGAMENTOS (Respeitando centralizações)
+            const startYFunc = doc.lastAutoTable.finalY + 12;
+            doc.setFontSize(10);
+            doc.text("RELAÇÃO DE PAGAMENTOS", 14, startYFunc - 3);
+            
+            doc.autoTable({
+                html: '#tab-rateio',
+                startY: startYFunc,
+                theme: 'grid',
+                headStyles: { fillColor: [45, 147, 68], halign: 'center' },
+                styles: { fontSize: 8.5 },
+                columnStyles: {
+                    0: { halign: 'center' }, // Matrícula
+                    2: { halign: 'center' }, // Setor
+                    3: { halign: 'center' }, // Dias
+                    4: { halign: 'center' }, // Bônus
+                    5: { halign: 'center' }  // Total Final
+                }
+            });
+
+            // Assinaturas
+            let finalY = doc.lastAutoTable.finalY + 20;
+            if (finalY > 165) { doc.addPage(); finalY = 30; }
+
+            doc.setFontSize(10);
             doc.text("__________________________________________", 148.5, finalY, { align: "center" });
             doc.text("CARLOS HENRIQUE GREJO", 148.5, finalY + 5, { align: "center" });
             doc.text("Chefe de Serviço de Formação Educacional, Trabalho e Capacitação Profissional", 148.5, finalY + 10, { align: "center" });
+            
             doc.text("__________________________________________", 148.5, finalY + 30, { align: "center" });
             doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, finalY + 35, { align: "center" });
             doc.text("Chefe de Departamento", 148.5, finalY + 40, { align: "center" });
+
             doc.save(`Rateio_${dataRef.replace(' / ','_')}.pdf`);
         }
 
