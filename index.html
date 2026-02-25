@@ -16,8 +16,7 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; }
         .container { max-width: 1150px; margin: 0 auto; padding: 20px; }
         
-        /* Cabeçalho */
-        .header-container { text-align: center; padding: 20px; display: block; }
+        .header-container { text-align: center; padding: 20px; }
         .logo-placeholder { width: 100px; height: auto; margin-bottom: 10px; }
         
         .tela { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
@@ -29,22 +28,18 @@
         .btn-dash i { font-size: 2.5rem; margin-bottom: 10px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); }
 
-        /* Tabelas Compactas e Congeladas */
-        .table-wrapper { max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        
-        thead th { 
-            position: sticky; top: 0; background: #f8f9fa; z-index: 10;
-            padding: 6px 10px; border-bottom: 2px solid #ccc;
-        }
-        
-        td { padding: 4px 10px; border-bottom: 1px solid #eee; }
-        .text-center { text-align: center !important; }
+        /* Cards de Resumo (Espelho) */
+        .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card-resumo { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; text-align: center; }
+        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; }
+        .card-resumo b { font-size: 1.1rem; color: var(--azul); }
 
-        /* Orientações */
-        .card-info { background: #fff; border-left: 5px solid var(--azul); padding: 15px; border-radius: 8px; margin-top: 30px; }
-        .card-info h4 { margin: 0 0 10px 0; color: var(--azul); }
-        .card-info ul { padding-left: 20px; margin: 0; font-size: 0.9rem; }
+        /* Tabelas */
+        .table-wrapper { max-height: 450px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 8px; border-bottom: 2px solid #ccc; }
+        td { padding: 5px 10px; border-bottom: 1px solid #eee; }
+        .text-center { text-align: center !important; }
 
         textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; }
         .btn-std { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
@@ -67,23 +62,15 @@
                 <button class="btn-dash" style="background:var(--laranja)" onclick="navegar('tela-cadastro')"><i class="fa fa-users"></i>FUNCIONÁRIOS</button>
                 <button class="btn-dash" style="background:var(--azul)" onclick="navegar('tela-pagamentos')"><i class="fa fa-file-invoice-dollar"></i>RELATÓRIO</button>
             </div>
-            <div class="card-info">
-                <h4><i class="fa fa-info-circle"></i> Orientações</h4>
-                <ul>
-                    <li>Cadastre as empresas e selecione o mês primeiro.</li>
-                    <li>Importe a lista de funcionários com matrícula, nome e dias.</li>
-                    <li>Confira o relatório final e gere o PDF com as assinaturas.</li>
-                </ul>
-            </div>
         </section>
 
         <section id="tela-empresas" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
-            <h3 style="color:var(--verde); margin: 15px 0;">Lançamento M.O.I</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 style="color:var(--verde)">Lançamento M.O.I</h3>
             <textarea id="txt-empresas" placeholder="Empresa [TAB] Valor"></textarea>
             <div style="margin: 10px 0; display: flex; gap: 8px; align-items: center;">
                 <select id="sel-mes-referencia" class="sel-mes">
-                    <option value="">Selecione o Mês</option>
+                    <option value="">Mês Ref.</option>
                     <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
                     <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
                     <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
@@ -98,17 +85,15 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <p style="text-align: right; font-weight: bold; color: var(--verde);">TOTAL M.O.I: <span id="total-emp">R$ 0,00</span></p>
+            <p style="text-align: right; font-weight: bold; color: var(--verde);">TOTAL M.O.I: <span id="total-emp-display">R$ 0,00</span></p>
         </section>
 
         <section id="tela-cadastro" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
-            <h3 style="color:var(--laranja); margin: 15px 0;">Gestão de Funcionários</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 style="color:var(--laranja)">Gestão de Funcionários</h3>
             <textarea id="txt-funcs" placeholder="Matrícula [TAB] Nome [TAB] Dias [TAB] Setor [TAB] Bônus"></textarea>
-            <div style="margin-bottom: 15px;">
-                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar</button>
-                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
-            </div>
+            <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar</button>
+            <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
             <div class="table-wrapper">
                 <table id="tab-funcs">
                     <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Bônus</th><th class="text-center">Ações</th></tr></thead>
@@ -118,8 +103,15 @@
         </section>
 
         <section id="tela-pagamentos" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
-            <h3 style="color:var(--azul); margin: 15px 0;">Relação de Pagamentos</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <h3 id="titulo-pagamentos" style="color:var(--azul)">Relação de Pagamentos</h3>
+            
+            <div class="resumo-grid">
+                <div class="card-resumo"><small>TOTAL M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">R$ 0,00</b></div>
+                <div class="card-resumo"><small>TOTAL DIAS</small><b id="esp-total-dias">0</b></div>
+                <div class="card-resumo"><small>VALOR DO DIA</small><b id="esp-valor-dia" style="color:var(--laranja)">R$ 0,00</b></div>
+            </div>
+
             <div style="text-align: right; margin-bottom: 10px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;">Excel</button>
                 <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;">PDF</button>
@@ -151,12 +143,10 @@
         function navegar(id) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            // Esconde cabeçalho se não for o menu
             document.getElementById('main-header').style.display = (id === 'tela-menu' ? 'block' : 'none');
             if(id === 'tela-pagamentos') calcular();
         }
 
-        // ... [Lógica de processamento e exportação idêntica ao Código 3 anterior, garantindo as centralizações e regras de negócio] ...
         function importar(tipo) {
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
             const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
@@ -184,7 +174,7 @@
                     <button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
                 </td></tr>`;
             });
-            document.getElementById('total-emp').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+            document.getElementById('total-emp-display').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
         }
 
         function renderFunc() {
@@ -199,10 +189,19 @@
         }
 
         function calcular() {
+            const mes = document.getElementById('sel-mes-referencia').value;
+            const ano = document.getElementById('sel-ano-referencia').value;
+            document.getElementById('titulo-pagamentos').innerText = `Relação de Pagamentos - ${mes} / ${ano}`;
+
             const bruto = empresas.reduce((a, b) => a + b.valor, 0);
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const qtdBonus = funcionarios.filter(f => f.bonus === 'Sim').length;
             const valorDia = totalDias > 0 ? (bruto - (qtdBonus * 200)) / totalDias : 0;
+
+            document.getElementById('esp-total-moi').innerText = "R$ " + bruto.toLocaleString('pt-BR',{minimumFractionDigits:2});
+            document.getElementById('esp-total-dias').innerText = totalDias;
+            document.getElementById('esp-valor-dia').innerText = "R$ " + valorDia.toLocaleString('pt-BR',{minimumFractionDigits:4});
+
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             funcionarios.forEach(f => {
                 const total = (f.dias * valorDia) + (f.bonus === 'Sim' ? 200 : 0);
