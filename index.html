@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rateio - CPP II de Bauru</title>
-    
+    <title>Sistema de Rateio - CPP II Bauru</title>
     <link rel="icon" type="image/png" href="icone.png">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,50 +12,37 @@
 
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --cinza-claro: #f4f7f6; }
-        
         body { font-family: 'Segoe UI', sans-serif; background: var(--cinza-claro); margin: 0; color: #333; }
         .container { max-width: 1150px; margin: 0 auto; padding: 20px; }
-        
-        /* Cabeçalho */
         .header-container { text-align: center; padding: 20px; }
         .logo-placeholder { width: 120px; height: auto; margin-bottom: 10px; border-radius: 10px; }
-        
         .tela { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
         .active { display: block; }
-
-        /* Dashboard Menu */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.3rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.3rem; }
         .btn-dash i { font-size: 2.8rem; margin-bottom: 12px; }
-        .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
-
-        /* Cards de Resumo (Espelho) */
+        .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); }
         .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card-resumo { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; }
+        .card-resumo { background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; text-align: center; }
+        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.7rem; }
         .card-resumo b { font-size: 1.15rem; color: var(--azul); }
-
-        /* Tabelas Compactas e Sticky Header */
         .table-wrapper { max-height: 480px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 8px; border-bottom: 2px solid #ccc; }
         td { padding: 6px 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
-
-        /* Inputs e Botões */
-        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; }
-        .btn-std { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; transition: 0.2s; }
-        .btn-std:hover { opacity: 0.9; }
+        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.85rem; margin-bottom: 10px; }
+        .btn-std { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
         .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 2px 5px; }
-        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; font-weight: bold; }
+        .sel-mes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <div id="main-header" class="header-container">
-        <img src="icone.png" alt="Logo CPP II Bauru" class="logo-placeholder">
+        <img src="icone.png" alt="Logo CPP II" class="logo-placeholder">
         <h1 style="margin:0; color:#2c3e50;">SISTEMA DE RATEIO</h1>
-        <p style="color:#666; margin-top:5px;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
+        <p style="color:#666;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
     </div>
 
     <div class="container">
@@ -72,7 +57,7 @@
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
             <h3 style="color:var(--verde)">Lançamento M.O.I</h3>
-            <textarea id="txt-empresas" placeholder="Copie do Excel e cole aqui"></textarea>
+            <textarea id="txt-empresas" placeholder="Cole os dados aqui..."></textarea>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                 <select id="sel-mes-referencia" class="sel-mes">
                     <option value="">Mês</option>
@@ -157,9 +142,13 @@
             txt.split('\n').forEach(linha => {
                 const c = linha.split('\t');
                 if(tipo === 'emp' && c.length >= 2) {
+                    const col1 = c[0].toUpperCase();
+                    // IGNORA CABEÇALHOS E LINHA DE TOTAL DO EXCEL
+                    if(col1.includes("Nº") || col1.includes("EMPRESA") || col1.includes("TOTAL")) return;
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-                    empresas.push({ nome: c[0].trim(), valor: parseFloat(v) || 0 });
+                    if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
                 } else if(tipo === 'func' && c.length >= 4) {
+                    if(c[0].toUpperCase().includes("MATRÍCULA")) return;
                     funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2]) || 0, setor: c[3].trim(), bonus: (c[4] && c[4].toLowerCase().includes('sim')) ? 'Sim' : 'Não' });
                 }
             });
@@ -169,20 +158,13 @@
 
         function renderEmp() {
             const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
-            empresas.forEach((e, i) => {
-                total += e.valor;
-                tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
-                <td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`;
-            });
+            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
             document.getElementById('total-emp-display').innerText = "R$ " + total.toLocaleString('pt-BR',{minimumFractionDigits:2});
         }
 
         function renderFunc() {
             const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
-            funcionarios.forEach((f, i) => {
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.bonus}</td>
-                <td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`;
-            });
+            funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.bonus}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
         }
 
         function calcular() {
@@ -203,37 +185,24 @@
             });
         }
 
-        function abrirEdicao(tipo, i) {
-            tipoEditando = tipo; idEditando = i;
-            const corpo = document.getElementById('corpo-modal');
-            if(tipo === 'emp') {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
-            } else {
-                corpo.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
-            }
+        function abrirEdicao(t, i) {
+            tipoEditando = t; idEditando = i; const c = document.getElementById('corpo-modal');
+            if(t==='emp') c.innerHTML = `Nome: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" value="${empresas[i].valor}">`;
+            else c.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}"> Bônus: <select id="ed-4"><option ${funcionarios[i].bonus==='Sim'?'selected':''}>Sim</option><option ${funcionarios[i].bonus==='Não'?'selected':''}>Não</option></select>`;
             document.getElementById('modal-edicao').style.display = 'flex';
         }
 
         function salvarEdicao() {
-            if(tipoEditando === 'emp') {
-                empresas[idEditando].nome = document.getElementById('ed-1').value;
-                empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0;
-                renderEmp(); salvar('salvarEmpresas', empresas);
-            } else {
-                funcionarios[idEditando].nome = document.getElementById('ed-1').value;
-                funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0;
-                funcionarios[idEditando].setor = document.getElementById('ed-3').value;
-                funcionarios[idEditando].bonus = document.getElementById('ed-4').value;
-                renderFunc(); salvar('salvarTodosFuncionarios', funcionarios);
-            }
+            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value; empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
+            else { funcionarios[idEditando].nome = document.getElementById('ed-1').value; funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value; funcionarios[idEditando].bonus = document.getElementById('ed-4').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
             fecharModal();
         }
 
         function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
-        function excluir(tipo, i) { if(confirm("Excluir?")) { tipo === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
-        async function salvar(acao, dados) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao, dados }) }); }
+        function excluir(t, i) { if(confirm("Excluir?")) { t === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
+        async function salvar(a, d) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
         async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) {} }
-        async function limparRemoto(acao) { if(confirm("Limpar tudo?")) { acao === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(acao, []); } }
+        async function limparRemoto(a) { if(confirm("Limpar tudo?")) { a === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(a, []); } }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
@@ -253,26 +222,16 @@
             doc.text("Relatório de Rateio", 18, 34.5); doc.text(dataRef, 279, 34.5, { align: "right" });
             doc.setTextColor(0, 0, 0);
 
-            // CORREÇÃO: ADICIONANDO A LINHA DE TOTAL NA TABELA DE EMPRESAS
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, `R$ ${e.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`]);
             dadosEmpresas.push(['', {content: 'TOTAL M.O.I', styles: {fontStyle: 'bold', halign: 'right'}}, {content: `R$ ${totalMoi.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, styles: {fontStyle: 'bold', halign: 'center'}}]);
 
             doc.autoTable({
-                head: [['Nº', 'Empresas', 'Valor']],
-                body: dadosEmpresas,
-                startY: 42,
-                theme: 'grid',
-                styles: { fontSize: 8.5 },
-                headStyles: { fillColor: [100, 100, 100], halign: 'center' },
-                columnStyles: { 0: { halign: 'center', cellWidth: 15 }, 2: { halign: 'center', cellWidth: 45 } }
+                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 42, theme: 'grid', styles: { fontSize: 8.5 },
+                headStyles: { fillColor: [100, 100, 100], halign: 'center' }, columnStyles: { 0: { halign: 'center', cellWidth: 15 }, 2: { halign: 'center', cellWidth: 45 } }
             });
 
             doc.autoTable({
-                html: '#tab-rateio',
-                startY: doc.lastAutoTable.finalY + 12,
-                theme: 'grid',
-                headStyles: { fillColor: [45, 147, 68], halign: 'center' },
-                styles: { fontSize: 8.5 },
+                html: '#tab-rateio', startY: doc.lastAutoTable.finalY + 12, theme: 'grid', headStyles: { fillColor: [45, 147, 68], halign: 'center' }, styles: { fontSize: 8.5 },
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' }, 5: { halign: 'center' } }
             });
 
@@ -283,7 +242,6 @@
             doc.text("__________________________________________", 148.5, fY + 30, { align: "center" });
             doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, fY + 35, { align: "center" });
             doc.text("Chefe de Departamento", 148.5, fY + 40, { align: "center" });
-
             doc.save(`Rateio_${dataRef.replace(/ \/ /g, '_')}.pdf`);
         }
 
@@ -297,10 +255,8 @@
                 const rowD = []; row.querySelectorAll("th, td").forEach(cell => rowD.push(cell.innerText));
                 ws_data.push(rowD);
             });
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Rateio");
-            XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Rateio"); XLSX.writeFile(wb, `Rateio_${dataRef}.xlsx`);
         }
         window.onload = carregar;
     </script>
