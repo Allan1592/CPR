@@ -222,9 +222,9 @@
             doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14); doc.setTextColor(255, 255, 255);
             doc.text("Relatório de Rateio", 18, 34.5); 
-            doc.setFontSize(10); doc.text(`TOTAL M.O.I: ${totalMoi}`, 279, 34.5, { align: "right" });
+            doc.setFontSize(14); doc.text(`TOTAL M.O.I: ${totalMoi}`, 279, 34.5, { align: "right" });
             doc.setTextColor(0, 0, 0); doc.text(`Referência: ${mes} / ${ano}`, 14, 42);
 
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
