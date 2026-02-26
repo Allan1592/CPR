@@ -234,7 +234,7 @@
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' } } 
             });
 
-            doc.setFont("helvetica", "bold"); doc.text("Relatório de Pagamentos", 14, doc.lastAutoTable.finalY + 10);
+            doc.setFont("helvetica", "bold"); doc.text("Relatório de Pagamentos", 12, doc.lastAutoTable.finalY + 10);
             const headRateio = [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']];
             const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => {
                 return Array.from(tr.querySelectorAll("td")).map(td => td.innerText);
