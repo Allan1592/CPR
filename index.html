@@ -175,19 +175,35 @@
             });
         }
 
+        // LÓGICA DE CÁLCULO ATUALIZADA COM AJUSTE DE ARREDONDAMENTO
         function calcular() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
             document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${mes} / ${ano}`;
-            const bruto = empresas.reduce((a, b) => a + b.valor, 0);
+            
+            const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
+            
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
-            const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
-            funcionarios.forEach(f => {
-                const totalFunc = f.dias * valorDia;
+            
+            const tb = document.querySelector('#tab-rateio tbody'); 
+            tb.innerHTML = '';
+            
+            let acumuladoArredondado = 0;
+            
+            funcionarios.forEach((f, index) => {
+                let totalFunc;
+                // Se for o último funcionário, ele pega a sobra exata do total bruto
+                if (index === funcionarios.length - 1) {
+                    totalFunc = Math.round((bruto - acumuladoArredondado) * 100) / 100;
+                } else {
+                    totalFunc = Math.round((f.dias * valorDia) * 100) / 100;
+                    acumuladoArredondado += totalFunc;
+                }
+                
                 tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
             });
         }
@@ -274,19 +290,13 @@
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
-        // FUNÇÃO ATUALIZADA: EXPORTA APENAS DADOS DOS FUNCIONÁRIOS
         function exportarExcel() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            
-            // Cabeçalhos originais da tabela de pagamentos
             const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
-            
-            // Adiciona apenas as linhas dos funcionários extraídas da tabela de rateio
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => {
                 ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
             });
-
             const wb = XLSX.utils.book_new(); 
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Funcionários"); 
