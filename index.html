@@ -23,7 +23,7 @@
         .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.2rem; }
         .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-        .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .card-resumo { background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; }
         .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .card-resumo b { font-size: 1.3rem; color: var(--azul); }
@@ -101,11 +101,14 @@
         <section id="tela-pagamentos" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 id="titulo-pagamentos" style="color:var(--azul)">Relatório de Pagamentos</h3>
+            
             <div class="resumo-grid">
                 <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">0,00</b></div>
                 <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
                 <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">0,00</b></div>
+                <div class="card-resumo"><small>Total Funcionários</small><b id="esp-total-funcs" style="color:var(--azul)">0</b></div>
             </div>
+
             <div style="text-align: right; margin-bottom: 15px; display: flex; justify-content: flex-end; gap: 10px;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
                 <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> PDF</button>
@@ -175,7 +178,6 @@
             });
         }
 
-        // LÓGICA DE CÁLCULO ATUALIZADA COM AJUSTE DE ARREDONDAMENTO
         function calcular() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
@@ -184,26 +186,25 @@
             const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
+            const totalFuncs = funcionarios.length;
             
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
+            document.getElementById('esp-total-funcs').innerText = totalFuncs;
             
             const tb = document.querySelector('#tab-rateio tbody'); 
             tb.innerHTML = '';
             
             let acumuladoArredondado = 0;
-            
             funcionarios.forEach((f, index) => {
                 let totalFunc;
-                // Se for o último funcionário, ele pega a sobra exata do total bruto
                 if (index === funcionarios.length - 1) {
                     totalFunc = Math.round((bruto - acumuladoArredondado) * 100) / 100;
                 } else {
                     totalFunc = Math.round((f.dias * valorDia) * 100) / 100;
                     acumuladoArredondado += totalFunc;
                 }
-                
                 tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
             });
         }
@@ -233,24 +234,34 @@
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
             const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
+            const totalDias = document.getElementById('esp-total-dias').innerText;
+            const valorDia = document.getElementById('esp-valor-dia').innerText;
+            const totalFuncs = document.getElementById('esp-total-funcs').innerText;
 
             doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
             doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
+            
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
             doc.setFontSize(12); doc.setTextColor(255, 255, 255);
-            doc.text("Relatório de Rateio", 18, 34.5); 
-            doc.setFontSize(10); doc.text(`TOTAL M.O.I: ${totalMoi}`, 279, 34.5, { align: "right" });
-            doc.setTextColor(0, 0, 0); doc.text(`Referência: ${mes} / ${ano}`, 14, 42);
+            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
+            
+            // ESPELHAMENTO DOS CARDS NO PDF
+            doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.setFont("helvetica", "bold");
+            let yResumo = 44;
+            doc.text(`TOTAL M.O.I: R$ ${totalMoi}`, 14, yResumo);
+            doc.text(`TOTAL DIAS: ${totalDias}`, 80, yResumo);
+            doc.text(`VALOR DIA: R$ ${valorDia}`, 140, yResumo);
+            doc.text(`TOTAL FUNCIONÁRIOS: ${totalFuncs}`, 210, yResumo);
 
             const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
             doc.autoTable({ 
-                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 46, theme: 'grid', styles: { fontSize: 8.5 },
+                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 48, theme: 'grid', styles: { fontSize: 8.5 },
                 headStyles: { halign: 'center' },
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' } } 
             });
 
-            doc.setFont("helvetica", "bold"); doc.text("Relatório de Pagamentos", 14, doc.lastAutoTable.finalY + 10);
+            doc.setFont("helvetica", "bold"); doc.text("Lista de Distribuição (Rateio)", 14, doc.lastAutoTable.finalY + 10);
             const headRateio = [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']];
             const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => {
                 return Array.from(tr.querySelectorAll("td")).map(td => td.innerText);
@@ -261,30 +272,26 @@
                 columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
             });
 
-            let currentY = doc.lastAutoTable.finalY + 25;
+            let currentY = doc.lastAutoTable.finalY + 20;
+            if (currentY > 160) { doc.addPage(); currentY = 20; } // Evita quebrar assinatura no fim da página
+
             const hoje = new Date();
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
             const dataExtensa = `Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`;
 
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
             doc.text(dataExtensa, 148.5, currentY, { align: 'center' });
 
-            currentY += 20;
-
+            currentY += 15;
             doc.setFont("helvetica", "bold");
             doc.text("CARLOS HENRIQUE GREJO", 148.5, currentY, { align: 'center' });
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
             doc.text("Chefe de Serviço de Formação Educacional, trabalho e Capacitação Profissional", 148.5, currentY + 5, { align: 'center' });
 
-            currentY += 20;
-
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
+            currentY += 18;
+            doc.setFontSize(10); doc.setFont("helvetica", "bold");
             doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, currentY, { align: 'center' });
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
             doc.text("Chefe de Departamento", 148.5, currentY + 5, { align: 'center' });
 
             doc.save(`Rateio_${mes}_${ano}.pdf`);
