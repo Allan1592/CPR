@@ -59,8 +59,8 @@
         </section>
 
         <section id="tela-empresas" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
-            <h3 style="color:var(--verde)">Lançamento M.O.I (Receitas)</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
+            <h3 style="color:var(--verde)">Relação de Empresas</h3>
             <textarea id="txt-empresas" placeholder="Cole os dados do Excel |Nome e Valor..."></textarea>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
                 <select id="sel-mes-referencia" style="padding:10px; border-radius:4px;">
@@ -83,12 +83,12 @@
         </section>
 
         <section id="tela-cadastro" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
-            <h3 style="color:var(--laranja)">Gestão de Funcionários</h3>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
+            <h3 style="color:var(--laranja)">Relação de Pagamentos</h3>
             <textarea id="txt-funcs" placeholder="Cole os dados do Excel: |matrícula|Nome|Dias|Setor"></textarea>
             <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Importar Lista</button>
-                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar Todos</button>
+                <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Adicionar Lista</button>
+                <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-funcs">
@@ -99,7 +99,7 @@
         </section>
 
         <section id="tela-pagamentos" class="tela">
-            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Voltar</button>
+            <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 id="titulo-pagamentos" style="color:var(--azul)">Relatório de Pagamentos</h3>
             <div class="resumo-grid">
                 <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">0,00</b></div>
@@ -121,7 +121,7 @@
 
     <div id="modal-edicao"><div class="modal-content"><h4 style="margin-top:0">Editar Registro</h4><div id="corpo-modal"></div><div style="margin-top:20px; text-align:right;"><button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button> <button onclick="fecharModal()" class="btn-std" style="background:#666">Sair</button></div></div></div>
 
-    <footer>Desenvolvido por: <b>Allan Ramos | Policial Penal do CPP II de Bauru</b></footer>
+    <footer>Idealizado por: <b>Allan Ramos | Policial Penal | CPP II de Bauru</b></footer>
 
     <script>
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfCfWVF-fIn1KLcG1yzuCTzD4tkRwL5fNWR76MFkTVysrRZBo-1AsyMnOuPBE5isia/exec";
@@ -218,7 +218,8 @@
             const ano = document.getElementById('sel-ano-referencia').value;
             const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
 
-            doc.setFontSize(11); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
+            doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
+            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
             doc.setFontSize(12); doc.setTextColor(255, 255, 255);
