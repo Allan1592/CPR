@@ -29,7 +29,7 @@
         
         #pop-bonificados { 
             display: none; position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 600px; background: white; border-radius: 8px; 
+            width: 90%; max-width: 650px; background: white; border-radius: 8px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3000; border: 2px solid var(--roxo);
         }
         .pop-header { 
@@ -48,7 +48,6 @@
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
         
-        /* AJUSTE NA CAIXA DE TEXTO PARA NÃO SALTAR A MARGEM */
         textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 6px; padding: 12px; margin-bottom: 10px; font-family: inherit; resize: vertical; box-sizing: border-box; display: block; }
         
         .btn-std { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
@@ -59,10 +58,12 @@
         .modal-content { background:white; padding:25px; border-radius:8px; width:350px; }
         .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
 
-        /* ESTILO DAS NOTIFICAÇÕES PERSONALIZADAS */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast { background: #333; color: white; padding: 12px 20px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; animation: slideIn 0.3s ease forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .input-manual-group { display: flex; gap: 5px; margin-bottom: 10px; }
+        .input-manual-group input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -153,10 +154,16 @@
             <button onclick="fecharPopBonificados()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">&times;</button>
         </div>
         <div style="padding: 15px;">
-            <textarea id="txt-bonus" placeholder="Cole do Excel: |matrícula|Nome|Setor"></textarea>
+            <div class="input-manual-group">
+                <input type="text" id="add-bonus-mat" placeholder="Matrícula">
+                <input type="text" id="add-bonus-nome" placeholder="Nome Completo">
+                <input type="text" id="add-bonus-setor" placeholder="Setor">
+                <button onclick="adicionarManualBonus()" class="btn-std" style="background:var(--roxo); padding: 5px 15px;"><i class="fa fa-plus"></i></button>
+            </div>
+            <textarea id="txt-bonus" placeholder="Ou Cole do Excel: |matrícula|Nome|Setor"></textarea>
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <button onclick="importar('bonus')" class="btn-std" style="background:var(--roxo)">Adicionar</button>
-                <button onclick="limparRemoto('limparBonificados')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
+                <button onclick="importar('bonus')" class="btn-std" style="background:var(--roxo)">Importar Lista</button>
+                <button onclick="limparRemoto('limparBonificados')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
             <div class="table-wrapper" style="max-height: 300px;">
                 <table id="tab-bonus">
@@ -175,7 +182,6 @@
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfCfWVF-fIn1KLcG1yzuCTzD4tkRwL5fNWR76MFkTVysrRZBo-1AsyMnOuPBE5isia/exec";
         let empresas = [], funcionarios = [], bonificados = [], idEditando = null, tipoEditando = '';
 
-        // FUNÇÃO DE NOTIFICAÇÃO PERSONALIZADA
         function avisar(msg, tipo = 'sucesso') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -212,11 +218,11 @@
                 const c = linha.split('\t');
                 if(tipo === 'emp' && c.length >= 2) {
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-                    if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
+                    if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].toUpperCase().trim(), valor: parseFloat(v) });
                 } else if(tipo === 'func' && c.length >= 3) {
-                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2]) || 0, setor: (c[3] || 'Geral').trim() });
+                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].toUpperCase().trim(), dias: parseFloat(c[2]) || 0, setor: (c[3] || 'Geral').toUpperCase().trim() });
                 } else if(tipo === 'bonus' && c.length >= 2) {
-                    bonificados.push({ matricula: c[0].trim(), nome: c[1].trim(), setor: (c[2] || 'Geral').trim() });
+                    bonificados.push({ matricula: c[0].trim(), nome: c[1].toUpperCase().trim(), setor: (c[2] || 'Geral').toUpperCase().trim() });
                 }
             });
             
@@ -226,6 +232,19 @@
             
             document.getElementById(idCampo).value = '';
             avisar("Dados processados com sucesso!");
+        }
+
+        // FUNÇÃO DE CADASTRO MANUAL RESTAURADA
+        function adicionarManualBonus() {
+            const m = document.getElementById('add-bonus-mat').value.trim();
+            const n = document.getElementById('add-bonus-nome').value.trim().toUpperCase();
+            const s = document.getElementById('add-bonus-setor').value.trim().toUpperCase();
+            if(!m || !n) return avisar("Matrícula e Nome são obrigatórios!", "erro");
+            bonificados.push({ matricula: m, nome: n, setor: s || 'GERAL' });
+            renderBonus();
+            salvar('salvarBonificados', bonificados);
+            ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value='');
+            avisar("Bonificado salvo!");
         }
 
         function renderBonus() {
@@ -275,9 +294,9 @@
         }
 
         function salvarEdicao() {
-            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value; empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
-            else if(tipoEditando === 'func') { funcionarios[idEditando].nome = document.getElementById('ed-1').value; funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
-            else { bonificados[idEditando].nome = document.getElementById('ed-1').value; bonificados[idEditando].setor = document.getElementById('ed-2').value; renderBonus(); salvar('salvarBonificados', bonificados); }
+            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
+            else if(tipoEditando === 'func') { funcionarios[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value.toUpperCase(); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            else { bonificados[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); bonificados[idEditando].setor = document.getElementById('ed-2').value.toUpperCase(); renderBonus(); salvar('salvarBonificados', bonificados); }
             fecharModal();
             avisar("Registro atualizado!");
         }
