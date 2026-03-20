@@ -61,7 +61,7 @@
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 style="color:var(--verde)">Relação de Empresas</h3>
-            <textarea id="txt-empresas" placeholder="Cole os dados do Excel |Nome e Valor..."></textarea>
+            <textarea id="txt-empresas" placeholder="Cole os dados do Excel (Nome e Valor ou Nº, Nome e Valor)..."></textarea>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
                 <select id="sel-mes-referencia" style="padding:10px; border-radius:4px;">
                     <option value="">Mês de Referência</option>
@@ -84,7 +84,7 @@
 
         <section id="tela-cadastro" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
-            <h3 style="color:var(--laranja)">Relação de Pagamentos</h3>
+            <h3 style="color:var(--laranja)">Relação de Funcionários</h3>
             <textarea id="txt-funcs" placeholder="Cole os dados do Excel: |matrícula|Nome|Dias|Setor"></textarea>
             <div style="margin-bottom: 20px; display: flex; gap: 10px;">
                 <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Adicionar Lista</button>
@@ -101,14 +101,12 @@
         <section id="tela-pagamentos" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 id="titulo-pagamentos" style="color:var(--azul)">Relatório de Pagamentos</h3>
-            
             <div class="resumo-grid">
                 <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">0,00</b></div>
                 <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
                 <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">0,00</b></div>
                 <div class="card-resumo"><small>Total Funcionários</small><b id="esp-total-funcs" style="color:var(--azul)">0</b></div>
             </div>
-
             <div style="text-align: right; margin-bottom: 15px; display: flex; justify-content: flex-end; gap: 10px;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
                 <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> PDF</button>
@@ -148,16 +146,26 @@
 
             txt.split('\n').forEach(linha => {
                 const c = linha.split('\t');
-                if(tipo === 'emp' && c.length >= 2) {
-                    const col1 = c[0].toUpperCase().trim();
-                    if(!isNaN(col1) || col1.includes("Nº") || col1.includes("EMPRESA") || col1.includes("TOTAL")) return;
-                    let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-                    if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
+                if (c.length < 2) return;
+
+                if(tipo === 'emp') {
+                    // Ignora cabeçalhos comuns
+                    if(c[0].toUpperCase().includes("Nº") || c[0].toUpperCase().includes("EMPRESA") || c[0].toUpperCase().includes("TOTAL")) return;
+                    
+                    // Identifica se a 1ª coluna é número (índice do Excel) e ajusta a leitura
+                    let nome = isNaN(c[0].trim()) ? c[0].trim() : (c[1] ? c[1].trim() : "Empresa S/N");
+                    let valorTexto = isNaN(c[0].trim()) ? c[1] : (c[2] || c[1]);
+                    
+                    let v = valorTexto.replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.').trim();
+                    let valorNum = parseFloat(v);
+                    
+                    if(!isNaN(valorNum)) empresas.push({ nome: nome, valor: valorNum });
                 } else if(tipo === 'func' && c.length >= 3) {
                     if(c[0].toUpperCase().includes("MATRÍCULA")) return;
-                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2]) || 0, setor: (c[3] || 'Geral').trim() });
+                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2].replace(',', '.')) || 0, setor: (c[3] || 'Geral').trim() });
                 }
             });
+            
             tipo === 'emp' ? (renderEmp(), salvar('salvarEmpresas', empresas)) : (renderFunc(), salvar('salvarTodosFuncionarios', funcionarios));
             document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value = '';
         }
@@ -186,24 +194,21 @@
             const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
-            const totalFuncs = funcionarios.length;
             
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
-            document.getElementById('esp-total-funcs').innerText = totalFuncs;
+            document.getElementById('esp-total-funcs').innerText = funcionarios.length;
             
-            const tb = document.querySelector('#tab-rateio tbody'); 
-            tb.innerHTML = '';
-            
-            let acumuladoArredondado = 0;
+            const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
+            let acumulado = 0;
             funcionarios.forEach((f, index) => {
                 let totalFunc;
                 if (index === funcionarios.length - 1) {
-                    totalFunc = Math.round((bruto - acumuladoArredondado) * 100) / 100;
+                    totalFunc = Math.round((bruto - acumulado) * 100) / 100;
                 } else {
                     totalFunc = Math.round((f.dias * valorDia) * 100) / 100;
-                    acumuladoArredondado += totalFunc;
+                    acumulado += totalFunc;
                 }
                 tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
             });
@@ -233,81 +238,35 @@
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
-            const totalDias = document.getElementById('esp-total-dias').innerText;
-            const valorDia = document.getElementById('esp-valor-dia').innerText;
-            const totalFuncs = document.getElementById('esp-total-funcs').innerText;
-
+            
             doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
-            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
             doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
             
             doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
-            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
+            doc.setTextColor(255, 255, 255); doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
             
-            // ESPELHAMENTO DOS CARDS NO PDF
-            doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.setFont("helvetica", "bold");
-            let yResumo = 44;
-            doc.text(`TOTAL M.O.I: R$ ${totalMoi}`, 14, yResumo);
-            doc.text(`TOTAL DIAS: ${totalDias}`, 80, yResumo);
-            doc.text(`VALOR DIA: R$ ${valorDia}`, 140, yResumo);
-            doc.text(`TOTAL FUNCIONÁRIOS: ${totalFuncs}`, 210, yResumo);
-
-            const dadosEmpresas = empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]);
+            doc.setTextColor(0, 0, 0); doc.setFontSize(10);
+            doc.text(`TOTAL M.O.I: R$ ${document.getElementById('total-emp-display').innerText}`, 14, 44);
+            
             doc.autoTable({ 
-                head: [['Nº', 'Empresas', 'Valor']], body: dadosEmpresas, startY: 48, theme: 'grid', styles: { fontSize: 8.5 },
-                headStyles: { halign: 'center' },
-                columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' } } 
+                head: [['Nº', 'Empresas', 'Valor']], body: empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]), startY: 48, theme: 'grid'
             });
 
-            doc.setFont("helvetica", "bold"); doc.text("Lista de Distribuição (Rateio)", 14, doc.lastAutoTable.finalY + 10);
-            const headRateio = [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']];
-            const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => {
-                return Array.from(tr.querySelectorAll("td")).map(td => td.innerText);
-            });
             doc.autoTable({ 
-                head: headRateio, body: bodyRateio, startY: doc.lastAutoTable.finalY + 15, theme: 'grid', styles: { fontSize: 8.5 }, 
-                headStyles: { fillColor: [45, 147, 68], halign: 'center' },
-                columnStyles: { 0: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }
+                head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], 
+                body: Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText)),
+                startY: doc.lastAutoTable.finalY + 10, theme: 'grid', headStyles: { fillColor: [45, 147, 68] }
             });
-
-            let currentY = doc.lastAutoTable.finalY + 20;
-            if (currentY > 160) { doc.addPage(); currentY = 20; } // Evita quebrar assinatura no fim da página
-
-            const hoje = new Date();
-            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-            const dataExtensa = `Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`;
-
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(dataExtensa, 148.5, currentY, { align: 'center' });
-
-            currentY += 15;
-            doc.setFont("helvetica", "bold");
-            doc.text("CARLOS HENRIQUE GREJO", 148.5, currentY, { align: 'center' });
-            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-            doc.text("Chefe de Serviço de Formação Educacional, trabalho e Capacitação Profissional", 148.5, currentY + 5, { align: 'center' });
-
-            currentY += 18;
-            doc.setFontSize(10); doc.setFont("helvetica", "bold");
-            doc.text("FLÁVIO ANDRÉ FERREIRA OJAS", 148.5, currentY, { align: 'center' });
-            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-            doc.text("Chefe de Departamento", 148.5, currentY + 5, { align: 'center' });
 
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
-            const mes = document.getElementById('sel-mes-referencia').value;
-            const ano = document.getElementById('sel-ano-referencia').value;
             const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
-            Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => {
-                ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
-            });
-            const wb = XLSX.utils.book_new(); 
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Funcionários"); 
-            XLSX.writeFile(wb, `Lista_Pagamentos_${mes}_${ano}.xlsx`);
+            Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Rateio");
+            XLSX.writeFile(wb, `Rateio.xlsx`);
         }
 
         window.onload = carregar;
