@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/dots/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --roxo: #8e44ad; --cinza-claro: #f4f7f6; }
@@ -27,10 +27,11 @@
         .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
         
+        /* JANELA DE BONIFICADOS MAIS LARGA */
         #pop-bonificados { 
-            display: none; position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 650px; background: white; border-radius: 8px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3000; border: 2px solid var(--roxo);
+            display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 850px; background: white; border-radius: 8px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 3000; border: 2px solid var(--roxo);
         }
         .pop-header { 
             background: var(--roxo); color: white; padding: 12px; cursor: move; 
@@ -43,7 +44,7 @@
         .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .card-resumo b { font-size: 1.3rem; color: var(--azul); }
         .table-wrapper { width: 100%; max-height: 400px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
@@ -62,8 +63,8 @@
         .toast { background: #333; color: white; padding: 12px 20px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; animation: slideIn 0.3s ease forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        .input-manual-group { display: flex; gap: 5px; margin-bottom: 10px; }
-        .input-manual-group input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; }
+        .input-manual-group { display: flex; gap: 8px; margin-bottom: 12px; }
+        .input-manual-group input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -72,7 +73,7 @@
 
     <div id="main-header" class="header-container">
         <img src="icone.png" alt="Logo CPP II Bauru" class="logo-placeholder">
-        <h1 style="margin:0; color:#2c3e50;">SISTEMA DE RATEIO</h1>
+        <h1 style="margin:0; color:#2c3e50;">GESTÃO DE RATEIO</h1>
         <p style="color:#666;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
     </div>
 
@@ -153,19 +154,19 @@
             <span><i class="fa fa-star"></i> Lista de Bonificados</span>
             <button onclick="fecharPopBonificados()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">&times;</button>
         </div>
-        <div style="padding: 15px;">
+        <div style="padding: 20px;">
             <div class="input-manual-group">
                 <input type="text" id="add-bonus-mat" placeholder="Matrícula">
                 <input type="text" id="add-bonus-nome" placeholder="Nome Completo">
                 <input type="text" id="add-bonus-setor" placeholder="Setor">
-                <button onclick="adicionarManualBonus()" class="btn-std" style="background:var(--roxo); padding: 5px 15px;"><i class="fa fa-plus"></i></button>
+                <button onclick="adicionarManualBonus()" class="btn-std" style="background:var(--roxo);"><i class="fa fa-plus"></i> Salvar</button>
             </div>
-            <textarea id="txt-bonus" placeholder="Ou Cole do Excel: |matrícula|Nome|Setor"></textarea>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <textarea id="txt-bonus" placeholder="Ou cole do Excel: | matrícula | Nome | Setor"></textarea>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button onclick="importar('bonus')" class="btn-std" style="background:var(--roxo)">Importar Lista</button>
                 <button onclick="limparRemoto('limparBonificados')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
-            <div class="table-wrapper" style="max-height: 300px;">
+            <div class="table-wrapper" style="max-height: 350px;">
                 <table id="tab-bonus">
                     <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Ações</th></tr></thead>
                     <tbody></tbody>
@@ -204,9 +205,7 @@
         function abrirPopBonificados() { document.getElementById('pop-bonificados').style.display = 'block'; renderBonus(); }
         function fecharPopBonificados() { document.getElementById('pop-bonificados').style.display = 'none'; }
 
-        function fmt(valor) {
-            return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
+        function fmt(valor) { return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
         function importar(tipo) {
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return avisar("Selecione o Mês!", "erro");
@@ -231,20 +230,19 @@
             else { renderBonus(); salvar('salvarBonificados', bonificados); }
             
             document.getElementById(idCampo).value = '';
-            avisar("Dados processados com sucesso!");
+            avisar("Dados processados!");
         }
 
-        // FUNÇÃO DE CADASTRO MANUAL RESTAURADA
         function adicionarManualBonus() {
             const m = document.getElementById('add-bonus-mat').value.trim();
             const n = document.getElementById('add-bonus-nome').value.trim().toUpperCase();
             const s = document.getElementById('add-bonus-setor').value.trim().toUpperCase();
-            if(!m || !n) return avisar("Matrícula e Nome são obrigatórios!", "erro");
+            if(!m || !n) return avisar("Preencha Matrícula e Nome!", "erro");
             bonificados.push({ matricula: m, nome: n, setor: s || 'GERAL' });
             renderBonus();
             salvar('salvarBonificados', bonificados);
             ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value='');
-            avisar("Bonificado salvo!");
+            avisar("Bonificado adicionado!");
         }
 
         function renderBonus() {
@@ -297,18 +295,17 @@
             if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
             else if(tipoEditando === 'func') { funcionarios[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value.toUpperCase(); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
             else { bonificados[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); bonificados[idEditando].setor = document.getElementById('ed-2').value.toUpperCase(); renderBonus(); salvar('salvarBonificados', bonificados); }
-            fecharModal();
-            avisar("Registro atualizado!");
+            fecharModal(); avisar("Registro atualizado!");
         }
 
         function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
         
         function excluir(t, i) { 
-            if(confirm("Deseja realmente excluir este registro?")) { 
+            if(confirm("Excluir este registro?")) { 
                 if(t === 'emp') { empresas.splice(i,1); renderEmp(); salvar('salvarEmpresas', empresas); }
                 else if(t === 'func') { funcionarios.splice(i,1); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
                 else { bonificados.splice(i,1); renderBonus(); salvar('salvarBonificados', bonificados); }
-                avisar("Registro excluído!", "erro");
+                avisar("Registro removido!", "erro");
             } 
         }
 
@@ -319,64 +316,34 @@
                 const res = await fetch(URL_SCRIPT); const d = await res.json(); 
                 empresas = d.empresas || []; funcionarios = d.funcionarios || []; bonificados = d.bonificados || [];
                 renderEmp(); renderFunc(); renderBonus();
-            } catch(e) { avisar("Erro ao carregar dados da nuvem.", "erro"); } 
+            } catch(e) { avisar("Erro de sincronização.", "erro"); } 
         }
 
         async function limparRemoto(a) { 
-            if(confirm("Deseja limpar todos os dados desta seção?")) { 
+            if(confirm("Limpar esta seção?")) { 
                 if(a === 'limparEmpresas') { empresas = []; renderEmp(); }
                 else if(a === 'limparFuncionarios') { funcionarios = []; renderFunc(); }
                 else { bonificados = []; renderBonus(); }
-                salvar(a, []); 
-                avisar("Seção limpa com sucesso!", "erro");
+                salvar(a, []); avisar("Dados limpos!", "erro");
             } 
         }
 
+        // Sistema de Arrastar Janela
         const dragItem = document.querySelector("#pop-drag");
-        const container = document.querySelector("#pop-bonificados");
+        const containerPop = document.querySelector("#pop-bonificados");
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-        dragItem.addEventListener("mousedown", dragStart);
-        document.addEventListener("mouseup", dragEnd);
-        document.addEventListener("mousemove", drag);
-
-        function dragStart(e) { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true; }
-        function dragEnd() { active = false; }
-        function drag(e) { 
-            if (active) { 
-                e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY;
-                xOffset = currentX; yOffset = currentY;
-                container.style.transform = `translate(${currentX}px, ${currentY}px)`;
-            }
-        }
+        dragItem.addEventListener("mousedown", (e) => { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true; });
+        document.addEventListener("mouseup", () => active = false);
+        document.addEventListener("mousemove", (e) => { if (active) { e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY; xOffset = currentX; yOffset = currentY; containerPop.style.transform = `translate(${currentX}px, ${currentY}px)`; } });
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
-            const totalDias = document.getElementById('esp-total-dias').innerText;
-            const valorDia = document.getElementById('esp-valor-dia').innerText;
-            const totalFuncs = document.getElementById('esp-total-funcs').innerText;
-
-            doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
-            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
-            doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
-            doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
-            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
-            doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.setFont("helvetica", "bold");
-            doc.text(`TOTAL M.O.I: R$ ${totalMoi}  |  TOTAL DIAS: ${totalDias}  |  VALOR DIA: R$ ${valorDia}  |  TOTAL FUNCIONÁRIOS: ${totalFuncs}`, 14, 44);
-
+            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 148.5, 34.5, { align: "center" });
             const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
-            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: bodyRateio, startY: 50, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [45, 147, 68] } });
-            
-            let currentY = doc.lastAutoTable.finalY + 20;
-            const hoje = new Date();
-            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`, 148.5, currentY, { align: 'center' });
+            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: bodyRateio, startY: 50, theme: 'grid', headStyles: { fillColor: [45, 147, 68] } });
             doc.save(`Rateio_${mes}_${ano}.pdf`);
             avisar("PDF gerado!");
         }
@@ -387,7 +354,7 @@
             const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Funcionários"); XLSX.writeFile(wb, `Lista_Pagamentos_${mes}_${ano}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Pagamentos"); XLSX.writeFile(wb, `Rateio_${mes}_${ano}.xlsx`);
             avisar("Excel exportado!");
         }
 
