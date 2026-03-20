@@ -28,7 +28,7 @@
         .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .card-resumo b { font-size: 1.3rem; color: var(--azul); }
         .table-wrapper { width: 100%; max-height: 480px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
@@ -62,20 +62,29 @@
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 style="color:var(--verde)">Relação de Empresas</h3>
             <textarea id="txt-empresas" placeholder="Cole os dados do Excel (Nome e Valor ou Nº, Nome e Valor)..."></textarea>
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
                 <select id="sel-mes-referencia" style="padding:10px; border-radius:4px;">
                     <option value="">Mês de Referência</option>
                     <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
                     <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
                     <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
                 </select>
-                <select id="sel-ano-referencia" style="padding:10px; border-radius:4px;"><option>2025</option><option selected>2026</option></select>
+                <select id="sel-ano-referencia" style="padding:10px; border-radius:4px;">
+                    <option>2025</option><option selected>2026</option>
+                </select>
                 <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar Dados</button>
                 <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-empresas">
-                    <thead><tr><th class="text-center">Nº</th><th>Empresa</th><th class="text-center">Valor</th><th class="text-center">Ações</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Nº</th>
+                            <th>Empresa</th>
+                            <th class="text-center">Valor</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -86,13 +95,22 @@
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 style="color:var(--laranja)">Relação de Funcionários</h3>
             <textarea id="txt-funcs" placeholder="Cole os dados do Excel: |matrícula|Nome|Dias|Setor"></textarea>
-            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                 <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Adicionar Lista</button>
                 <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-funcs">
-                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Ações</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Matrícula</th>
+                            <th>Nome</th>
+                            <th class="text-center">Dias</th>
+                            <th class="text-center">Setor</th>
+                            <th class="text-center">Valor</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -107,13 +125,21 @@
                 <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">0,00</b></div>
                 <div class="card-resumo"><small>Total Funcionários</small><b id="esp-total-funcs" style="color:var(--azul)">0</b></div>
             </div>
-            <div style="text-align: right; margin-bottom: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+            <div style="text-align: right; margin-bottom: 15px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
                 <button onclick="exportarPDF()" class="btn-std" style="background:#d32f2f;"><i class="fa fa-file-pdf"></i> PDF</button>
             </div>
             <div class="table-wrapper">
                 <table id="tab-rateio">
-                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Dias</th><th class="text-center">Total Final</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Matrícula</th>
+                            <th>Nome</th>
+                            <th class="text-center">Setor</th>
+                            <th class="text-center">Dias</th>
+                            <th class="text-center">Total Final</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -154,6 +180,16 @@
             });
         }
 
+        function calcularValorDia() {
+            const totalMoi = empresas.reduce((a, b) => a + (Number(b.valor) || 0), 0);
+            const totalDias = funcionarios.reduce((a, b) => a + (Number(b.dias) || 0), 0);
+            return {
+                totalMoi,
+                totalDias,
+                valorDia: totalDias > 0 ? totalMoi / totalDias : 0
+            };
+        }
+
         function importar(tipo) {
             if (tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) {
                 alert("Selecione o Mês!");
@@ -170,26 +206,15 @@
 
                 if (tipo === 'emp') {
                     const primeiraColuna = (c[0] || '').toUpperCase();
-                    if (
-                        primeiraColuna.includes('Nº') ||
-                        primeiraColuna.includes('EMPRESA') ||
-                        primeiraColuna.includes('TOTAL')
-                    ) return;
+                    if (primeiraColuna.includes('Nº') || primeiraColuna.includes('EMPRESA') || primeiraColuna.includes('TOTAL')) return;
 
                     const primeiraEhNumero = !isNaN(c[0]) && c[0] !== '';
                     const nome = primeiraEhNumero ? (c[1] || 'Empresa S/N') : c[0];
                     const valorTexto = primeiraEhNumero ? (c[2] || c[1] || '') : (c[1] || '');
-                    const valorLimpo = valorTexto
-                        .replace('R$', '')
-                        .replace(/\s/g, '')
-                        .replace(/\./g, '')
-                        .replace(',', '.')
-                        .trim();
-
+                    const valorLimpo = valorTexto.replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.').trim();
                     const valorNum = parseFloat(valorLimpo);
-                    if (!isNaN(valorNum)) {
-                        empresas.push({ nome, valor: valorNum });
-                    }
+
+                    if (!isNaN(valorNum)) empresas.push({ nome, valor: valorNum });
                 }
 
                 if (tipo === 'func' && c.length >= 3) {
@@ -205,9 +230,12 @@
 
             if (tipo === 'emp') {
                 renderEmp();
+                renderFunc();
+                calcular();
                 salvar('salvarEmpresas', empresas);
             } else {
                 renderFunc();
+                calcular();
                 salvar('salvarTodosFuncionarios', funcionarios);
             }
 
@@ -227,8 +255,8 @@
                         <td>${e.nome}</td>
                         <td class="text-center">${fmt(e.valor)}</td>
                         <td class="text-center">
-                            <button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
-                            <button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
+                            <button class="btn-icon" onclick="abrirEdicao('emp', ${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
+                            <button class="btn-icon" onclick="excluir('emp', ${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
@@ -240,16 +268,28 @@
             const tb = document.querySelector('#tab-funcs tbody');
             tb.innerHTML = '';
 
+            const { totalMoi, valorDia } = calcularValorDia();
+            let acumulado = 0;
+
             funcionarios.forEach((f, i) => {
+                let totalFunc;
+                if (i === funcionarios.length - 1) {
+                    totalFunc = Math.round((totalMoi - acumulado) * 100) / 100;
+                } else {
+                    totalFunc = Math.round(((Number(f.dias) || 0) * valorDia) * 100) / 100;
+                    acumulado += totalFunc;
+                }
+
                 tb.innerHTML += `
                     <tr>
                         <td class="text-center">${f.matricula}</td>
                         <td>${f.nome}</td>
                         <td class="text-center">${f.dias}</td>
                         <td class="text-center">${f.setor}</td>
+                        <td class="text-center"><b>${fmt(totalFunc)}</b></td>
                         <td class="text-center">
-                            <button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
-                            <button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
+                            <button class="btn-icon" onclick="abrirEdicao('func', ${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
+                            <button class="btn-icon" onclick="excluir('func', ${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
@@ -260,11 +300,9 @@
             const ano = document.getElementById('sel-ano-referencia').value;
             document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${mes} / ${ano}`;
 
-            const bruto = Math.round(empresas.reduce((a, b) => a + (Number(b.valor) || 0), 0) * 100) / 100;
-            const totalDias = funcionarios.reduce((a, b) => a + (Number(b.dias) || 0), 0);
-            const valorDia = totalDias > 0 ? bruto / totalDias : 0;
+            const { totalMoi, totalDias, valorDia } = calcularValorDia();
 
-            document.getElementById('esp-total-moi').innerText = fmt(bruto);
+            document.getElementById('esp-total-moi').innerText = fmt(totalMoi);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
             document.getElementById('esp-total-funcs').innerText = funcionarios.length;
@@ -276,7 +314,7 @@
             funcionarios.forEach((f, index) => {
                 let totalFunc;
                 if (index === funcionarios.length - 1) {
-                    totalFunc = Math.round((bruto - acumulado) * 100) / 100;
+                    totalFunc = Math.round((totalMoi - acumulado) * 100) / 100;
                 } else {
                     totalFunc = Math.round(((Number(f.dias) || 0) * valorDia) * 100) / 100;
                     acumulado += totalFunc;
@@ -324,12 +362,15 @@
                 empresas[idEditando].nome = document.getElementById('ed-1').value.trim();
                 empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0;
                 renderEmp();
+                renderFunc();
+                calcular();
                 salvar('salvarEmpresas', empresas);
             } else {
                 funcionarios[idEditando].nome = document.getElementById('ed-1').value.trim();
                 funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0;
                 funcionarios[idEditando].setor = document.getElementById('ed-3').value.trim();
                 renderFunc();
+                calcular();
                 salvar('salvarTodosFuncionarios', funcionarios);
             }
 
@@ -346,10 +387,13 @@
             if (t === 'emp') {
                 empresas.splice(i, 1);
                 renderEmp();
+                renderFunc();
+                calcular();
                 salvar('salvarEmpresas', empresas);
             } else {
                 funcionarios.splice(i, 1);
                 renderFunc();
+                calcular();
                 salvar('salvarTodosFuncionarios', funcionarios);
             }
         }
@@ -358,9 +402,7 @@
             try {
                 const res = await fetch(URL_SCRIPT, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8'
-                    },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ acao, dados })
                 });
 
@@ -371,9 +413,7 @@
                         console.error('Erro ao salvar:', json.erro);
                         alert('Erro ao salvar: ' + json.erro);
                     }
-                } catch (_) {
-                    console.warn('Resposta não JSON no salvar:', texto);
-                }
+                } catch (_) {}
             } catch (e) {
                 console.error(e);
                 alert('Falha de comunicação ao salvar os dados.');
@@ -395,6 +435,7 @@
 
                 renderEmp();
                 renderFunc();
+                calcular();
             } catch (e) {
                 console.error(e);
                 alert('Falha ao carregar os dados.');
@@ -407,9 +448,12 @@
             if (acao === 'limparEmpresas') {
                 empresas = [];
                 renderEmp();
+                renderFunc();
+                calcular();
             } else {
                 funcionarios = [];
                 renderFunc();
+                calcular();
             }
 
             await salvar(acao, []);
