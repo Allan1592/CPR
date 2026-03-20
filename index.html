@@ -38,8 +38,8 @@
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
         td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        .text-center { text-align: center !important; }
         
+        /* AQUI ESTÁ O CONSERTO DOS BOTÕES */
         .acoes-flex { display: flex; justify-content: center; gap: 12px; white-space: nowrap; }
 
         textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 6px; padding: 12px; margin-bottom: 10px; font-family: inherit; resize: vertical; box-sizing: border-box; display: block; }
@@ -56,6 +56,7 @@
         .input-manual-group { display: flex; gap: 8px; margin-bottom: 12px; }
         .input-manual-group input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; font-size: 0.9rem; }
         footer { text-align: center; padding: 25px; color: #777; font-size: 0.9rem; margin-top: auto; }
+        .text-center { text-align: center !important; }
     </style>
 </head>
 <body>
@@ -133,7 +134,7 @@
             </div>
             <div class="table-wrapper">
                 <table id="tab-rateio">
-                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Dias</th><th class="text-center">Total Final</th></tr></thead>
+                    <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Dias</th><th class="text-center">Setor</th><th class="text-center">Total Final</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -219,9 +220,7 @@
             if(tipo === 'emp') { renderEmp(); salvar('salvarEmpresas', empresas); }
             else if(tipo === 'func') { renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
             else { renderBonus(); salvar('salvarBonificados', bonificados); }
-            
-            document.getElementById(idCampo).value = '';
-            avisar("Dados salvos!");
+            document.getElementById(idCampo).value = ''; avisar("Dados salvos!");
         }
 
         function adicionarManualBonus() {
@@ -230,10 +229,8 @@
             const s = document.getElementById('add-bonus-setor').value.trim().toUpperCase();
             if(!m || !n) return avisar("Matrícula e Nome obrigatórios!", "erro");
             bonificados.push({ matricula: m, nome: n, setor: s || 'GERAL' });
-            renderBonus();
-            salvar('salvarBonificados', bonificados);
-            ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value='');
-            avisar("Bonificado salvo!");
+            renderBonus(); salvar('salvarBonificados', bonificados);
+            ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value=''); avisar("Bonificado salvo!");
         }
 
         function renderBonus() {
@@ -261,19 +258,16 @@
             const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
             const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
-            
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
             document.getElementById('esp-total-funcs').innerText = funcionarios.length;
-            
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
             let acumulado = 0;
             funcionarios.forEach((f, idx) => {
                 let total = idx === funcionarios.length - 1 ? Math.round((bruto - acumulado) * 100) / 100 : Math.round((f.dias * valorDia) * 100) / 100;
                 acumulado += total;
-                // CORREÇÃO: Ordem das colunas: Matrícula, Nome, Setor, Dias, Total
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(total)}</b></td></tr>`;
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center"><b>${fmt(total)}</b></td></tr>`;
             });
         }
 
@@ -306,12 +300,7 @@
         async function carregar() { 
             try { 
                 const res = await fetch(URL_SCRIPT); const d = await res.json(); 
-                empresas = d.empresas || []; 
-                // CORREÇÃO: Garante que os dados vindo do Sheet preencham as variáveis corretamente
-                funcionarios = (d.funcionarios || []).map(f => ({
-                    matricula: f.matricula, nome: f.nome, dias: parseFloat(f.dias) || 0, setor: f.setor
-                }));
-                bonificados = d.bonificados || [];
+                empresas = d.empresas || []; funcionarios = d.funcionarios || []; bonificados = d.bonificados || [];
                 renderEmp(); renderFunc(); renderBonus();
             } catch(e) { avisar("Erro ao carregar dados.", "erro"); } 
         }
@@ -339,19 +328,18 @@
             const ano = document.getElementById('sel-ano-referencia').value;
             doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 148.5, 34.5, { align: "center" });
             const body = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
-            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: body, startY: 50, theme: 'grid', headStyles: { fillColor: [45, 147, 68] } });
+            doc.autoTable({ head: [['Matrícula', 'Nome', 'Dias', 'Setor', 'Total Final']], body: body, startY: 50, theme: 'grid', headStyles: { fillColor: [45, 147, 68] } });
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
+            const ws_data = [ ["Matrícula", "Nome", "Dias", "Setor", "Total Final"] ];
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Pagamentos"); XLSX.writeFile(wb, `Rateio_${mes}_${ano}.xlsx`);
         }
-
         window.onload = carregar;
     </script>
 </body>
