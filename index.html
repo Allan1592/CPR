@@ -16,47 +16,48 @@
         .container { width: 95%; max-width: 1200px; margin: 20px auto; flex: 1; }
         .header-container { text-align: center; padding: 10px; }
         .logo-placeholder { width: 100px; height: auto; margin-bottom: 5px; border-radius: 10px; }
+        
         .tela { display: none; background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .active { display: block; }
         
-        /* Grid ajustado para 4 botões */
+        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
-        @media (max-width: 992px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 500px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
         
         .btn-dash { height: 160px; border: none; border-radius: 12px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; font-weight: bold; font-size: 1.1rem; }
         .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
         
-        /* Estilo do Pop-up Arrastável */
-        #pop-bonificados { 
-            display: none; position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 600px; background: white; border-radius: 8px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3000; border: 2px solid var(--roxo);
-        }
-        .pop-header { 
-            background: var(--roxo); color: white; padding: 12px; cursor: move; 
-            border-top-left-radius: 6px; border-top-right-radius: 6px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
+        /* Cards e Tabelas */
         .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .card-resumo { background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; }
         .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .card-resumo b { font-size: 1.3rem; color: var(--azul); }
-        .table-wrapper { width: 100%; max-height: 400px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        
+        .table-wrapper { width: 100%; max-height: 450px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
         td { padding: 10px; border-bottom: 1px solid #eee; }
         .text-center { text-align: center !important; }
-        textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 6px; padding: 12px; margin-bottom: 10px; font-family: inherit; resize: vertical; box-sizing: border-box; }
-        .btn-std { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; }
-        footer { text-align: center; padding: 25px; color: #777; font-size: 0.9rem; margin-top: auto; }
+
+        /* Pop-up Arrastável */
+        #pop-bonificados { 
+            display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 750px; background: white; border-radius: 8px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 3000; border: 2px solid var(--roxo);
+        }
+        .pop-header { background: var(--roxo); color: white; padding: 12px; cursor: move; display: flex; justify-content: space-between; align-items: center; border-radius: 6px 6px 0 0; }
         
+        /* Inputs e Botões */
+        .btn-std { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .input-manual { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea { width: 100%; height: 70px; border: 1px solid #ccc; border-radius: 6px; padding: 10px; margin: 10px 0; font-family: inherit; resize: vertical; }
+        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; }
+
         #modal-edicao { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4000; justify-content:center; align-items:center; }
         .modal-content { background:white; padding:25px; border-radius:8px; width:350px; }
-        .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        
+        footer { text-align: center; padding: 20px; color: #777; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -80,14 +81,9 @@
         <section id="tela-empresas" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 style="color:var(--verde)">Relação de Empresas</h3>
-            <textarea id="txt-empresas" placeholder="Cole os dados do Excel |Nome e Valor..."></textarea>
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
-                <select id="sel-mes-referencia" style="padding:10px; border-radius:4px;">
-                    <option value="">Mês de Referência</option>
-                    <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
-                    <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
-                    <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
-                </select>
+            <textarea id="txt-empresas" placeholder="Cole do Excel: Empresa [TAB] Valor"></textarea>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <select id="sel-mes-referencia" style="padding:10px; border-radius:4px;"><option value="">Mês de Referência</option><option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option><option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option><option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option></select>
                 <select id="sel-ano-referencia" style="padding:10px; border-radius:4px;"><option>2025</option><option selected>2026</option></select>
                 <button onclick="importar('emp')" class="btn-std" style="background:var(--verde)">Processar Dados</button>
                 <button onclick="limparRemoto('limparEmpresas')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
@@ -103,8 +99,8 @@
 
         <section id="tela-cadastro" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
-            <h3 style="color:var(--laranja)">Relação de Pagamentos</h3>
-            <textarea id="txt-funcs" placeholder="Cole os dados do Excel: |matrícula|Nome|Dias|Setor"></textarea>
+            <h3 style="color:var(--laranja)">Relação de Pagamentos (MDO)</h3>
+            <textarea id="txt-funcs" placeholder="Cole do Excel: Matrícula [TAB] Nome [TAB] Dias [TAB] Setor"></textarea>
             <div style="margin-bottom: 20px; display: flex; gap: 10px;">
                 <button onclick="importar('func')" class="btn-std" style="background:var(--laranja)">Adicionar Lista</button>
                 <button onclick="limparRemoto('limparFuncionarios')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
@@ -141,16 +137,22 @@
 
     <div id="pop-bonificados">
         <div class="pop-header" id="pop-drag">
-            <span><i class="fa fa-star"></i> Lista de Bonificados</span>
-            <button onclick="fecharPopBonificados()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">&times;</button>
+            <span><i class="fa fa-star"></i> Cadastro de Bonificados</span>
+            <button onclick="fecharPopBonificados()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.5rem;">&times;</button>
         </div>
         <div style="padding: 15px;">
-            <textarea id="txt-bonus" placeholder="Cole do Excel: |matrícula|Nome|Setor"></textarea>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <button onclick="importar('bonus')" class="btn-std" style="background:var(--roxo)">Adicionar</button>
-                <button onclick="limparRemoto('limparBonificados')" class="btn-std" style="background:var(--vermelho)">Limpar</button>
+            <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr auto; gap: 10px; margin-bottom: 15px; background: #f4f0f7; padding: 12px; border-radius: 6px;">
+                <div><small>Matrícula</small><input type="text" id="add-bonus-mat" class="input-manual"></div>
+                <div><small>Nome</small><input type="text" id="add-bonus-nome" class="input-manual"></div>
+                <div><small>Setor</small><input type="text" id="add-bonus-setor" class="input-manual"></div>
+                <div style="display:flex; align-items:flex-end;"><button onclick="adicionarManualBonus()" class="btn-std" style="background:var(--roxo); padding: 8px 12px;"><i class="fa fa-plus"></i></button></div>
             </div>
-            <div class="table-wrapper" style="max-height: 300px;">
+            <textarea id="txt-bonus" placeholder="Ou cole do Excel: Matrícula [TAB] Nome [TAB] Setor"></textarea>
+            <div style="display:flex; justify-content: space-between; margin-bottom: 10px;">
+                <button onclick="importar('bonus')" class="btn-std" style="background:var(--roxo)">Importar Lista</button>
+                <button onclick="limparRemoto('limparBonificados')" class="btn-std" style="background:var(--vermelho)">Limpar Tudo</button>
+            </div>
+            <div class="table-wrapper" style="max-height: 250px;">
                 <table id="tab-bonus">
                     <thead><tr><th class="text-center">Matrícula</th><th>Nome</th><th class="text-center">Setor</th><th class="text-center">Ações</th></tr></thead>
                     <tbody></tbody>
@@ -177,46 +179,50 @@
         function abrirPopBonificados() { document.getElementById('pop-bonificados').style.display = 'block'; renderBonus(); }
         function fecharPopBonificados() { document.getElementById('pop-bonificados').style.display = 'none'; }
 
-        function fmt(valor) {
-            return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
+        function fmt(v) { return (Math.round(v * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
         function importar(tipo) {
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
-            const idCampo = tipo === 'emp' ? 'txt-empresas' : (tipo === 'func' ? 'txt-funcs' : 'txt-bonus');
-            const txt = document.getElementById(idCampo).value.trim();
+            const id = tipo==='emp'?'txt-empresas':(tipo==='func'?'txt-funcs':'txt-bonus');
+            const txt = document.getElementById(id).value.trim();
             if(!txt) return;
 
-            txt.split('\n').forEach(linha => {
-                const c = linha.split('\t');
-                if(tipo === 'emp' && c.length >= 2) {
+            txt.split('\n').forEach(l => {
+                const c = l.split('\t');
+                if(tipo==='emp' && c.length>=2){
                     let v = c[1].replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
                     if(!isNaN(parseFloat(v))) empresas.push({ nome: c[0].trim(), valor: parseFloat(v) });
-                } else if(tipo === 'func' && c.length >= 3) {
-                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2]) || 0, setor: (c[3] || 'Geral').trim() });
-                } else if(tipo === 'bonus' && c.length >= 2) {
-                    bonificados.push({ matricula: c[0].trim(), nome: c[1].trim(), setor: (c[2] || 'Geral').trim() });
+                } else if(tipo==='func' && c.length>=3){
+                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2])||0, setor: (c[3]||'Geral').trim() });
+                } else if(tipo==='bonus' && c.length>=2){
+                    bonificados.push({ matricula: c[0].trim(), nome: c[1].trim(), setor: (c[2]||'Geral').trim() });
                 }
             });
-            
-            if(tipo === 'emp') { renderEmp(); salvar('salvarEmpresas', empresas); }
-            else if(tipo === 'func') { renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
-            else { renderBonus(); salvar('salvarBonificados', bonificados); }
-            
-            document.getElementById(idCampo).value = '';
+            atualizarSistema(tipo);
+            document.getElementById(id).value = '';
         }
 
-        function renderBonus() {
-            const tb = document.querySelector('#tab-bonus tbody'); tb.innerHTML = '';
-            bonificados.forEach((b, i) => { 
-                tb.innerHTML += `<tr><td class="text-center">${b.matricula}</td><td>${b.nome}</td><td class="text-center">${b.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('bonus',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('bonus',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
-            });
+        function adicionarManualBonus() {
+            const m = document.getElementById('add-bonus-mat').value.trim();
+            const n = document.getElementById('add-bonus-nome').value.trim();
+            const s = document.getElementById('add-bonus-setor').value.trim();
+            if(!m || !n) return;
+            bonificados.push({ matricula: m, nome: n.toUpperCase(), setor: s || 'Geral' });
+            atualizarSistema('bonus');
+            ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value='');
+            document.getElementById('add-bonus-mat').focus();
+        }
+
+        function atualizarSistema(t) {
+            if(t==='emp'){ renderEmp(); salvar('salvarEmpresas', empresas); }
+            else if(t==='func'){ renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            else { renderBonus(); salvar('salvarBonificados', bonificados); }
         }
 
         function renderEmp() {
-            const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
-            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
-            document.getElementById('total-emp-display').innerText = fmt(total);
+            const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let tot = 0;
+            empresas.forEach((e, i) => { tot+=e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+            document.getElementById('total-emp-display').innerText = fmt(tot);
         }
 
         function renderFunc() {
@@ -224,23 +230,28 @@
             funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
         }
 
+        function renderBonus() {
+            const tb = document.querySelector('#tab-bonus tbody'); tb.innerHTML = '';
+            bonificados.forEach((b, i) => { tb.innerHTML += `<tr><td class="text-center">${b.matricula}</td><td>${b.nome}</td><td class="text-center">${b.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('bonus',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('bonus',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+        }
+
         function calcular() {
-            const mes = document.getElementById('sel-mes-referencia').value;
-            const ano = document.getElementById('sel-ano-referencia').value;
-            document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${mes} / ${ano}`;
-            const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
-            const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
-            const valorDia = totalDias > 0 ? bruto / totalDias : 0;
+            const m = document.getElementById('sel-mes-referencia').value, a = document.getElementById('sel-ano-referencia').value;
+            document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${m} / ${a}`;
+            const bruto = Math.round(empresas.reduce((acc, e) => acc + e.valor, 0) * 100) / 100;
+            const totalD = funcionarios.reduce((acc, f) => acc + f.dias, 0);
+            const vDia = totalD > 0 ? bruto / totalD : 0;
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
-            document.getElementById('esp-total-dias').innerText = totalDias;
-            document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
+            document.getElementById('esp-total-dias').innerText = totalD;
+            document.getElementById('esp-valor-dia').innerText = fmt(vDia);
             document.getElementById('esp-total-funcs').innerText = funcionarios.length;
+            
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
-            let acumuladoArredondado = 0;
-            funcionarios.forEach((f, index) => {
-                let totalFunc = index === funcionarios.length - 1 ? Math.round((bruto - acumuladoArredondado) * 100) / 100 : Math.round((f.dias * valorDia) * 100) / 100;
-                acumuladoArredondado += totalFunc;
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
+            let acumulado = 0;
+            funcionarios.forEach((f, i) => {
+                let totalF = i === funcionarios.length - 1 ? Math.round((bruto - acumulado) * 100) / 100 : Math.round((f.dias * vDia) * 100) / 100;
+                acumulado += totalF;
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalF)}</b></td></tr>`;
             });
         }
 
@@ -253,20 +264,21 @@
         }
 
         function salvarEdicao() {
-            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value; empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
-            else if(tipoEditando === 'func') { funcionarios[idEditando].nome = document.getElementById('ed-1').value; funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
-            else { bonificados[idEditando].nome = document.getElementById('ed-1').value; bonificados[idEditando].setor = document.getElementById('ed-2').value; renderBonus(); salvar('salvarBonificados', bonificados); }
+            const v1 = document.getElementById('ed-1').value, v2 = document.getElementById('ed-2').value;
+            if(tipoEditando==='emp'){ empresas[idEditando].nome=v1; empresas[idEditando].valor=parseFloat(v2)||0; renderEmp(); salvar('salvarEmpresas', empresas); }
+            else if(tipoEditando==='func'){ funcionarios[idEditando].nome=v1; funcionarios[idEditando].dias=parseFloat(v2)||0; funcionarios[idEditando].setor=document.getElementById('ed-3').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            else { bonificados[idEditando].nome=v1; bonificados[idEditando].setor=v2; renderBonus(); salvar('salvarBonificados', bonificados); }
             fecharModal();
         }
 
         function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
         
         function excluir(t, i) { 
-            if(confirm("Excluir?")) { 
-                if(t === 'emp') { empresas.splice(i,1); renderEmp(); salvar('salvarEmpresas', empresas); }
-                else if(t === 'func') { funcionarios.splice(i,1); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            if(confirm("Deseja excluir este registro?")) {
+                if(t==='emp'){ empresas.splice(i,1); renderEmp(); salvar('salvarEmpresas', empresas); }
+                else if(t==='func'){ funcionarios.splice(i,1); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
                 else { bonificados.splice(i,1); renderBonus(); salvar('salvarBonificados', bonificados); }
-            } 
+            }
         }
 
         async function salvar(a, d) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
@@ -280,71 +292,48 @@
         }
 
         async function limparRemoto(a) { 
-            if(confirm("Limpar?")) { 
-                if(a === 'limparEmpresas') { empresas = []; renderEmp(); }
-                else if(a === 'limparFuncionarios') { funcionarios = []; renderFunc(); }
-                else { bonificados = []; renderBonus(); }
-                salvar(a, []); 
-            } 
-        }
-
-        // LÓGICA DE ARRASTAR O POPUP
-        const dragItem = document.querySelector("#pop-drag");
-        const container = document.querySelector("#pop-bonificados");
-        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-        dragItem.addEventListener("mousedown", dragStart);
-        document.addEventListener("mouseup", dragEnd);
-        document.addEventListener("mousemove", drag);
-
-        function dragStart(e) { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true; }
-        function dragEnd() { active = false; }
-        function drag(e) { 
-            if (active) { 
-                e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY;
-                xOffset = currentX; yOffset = currentY;
-                container.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            if(confirm("Atenção: Limpar todos os dados desta seção?")) {
+                if(a==='limparEmpresas') empresas=[]; else if(a==='limparFuncionarios') funcionarios=[]; else bonificados=[];
+                atualizarSistema(a==='limparEmpresas'?'emp':(a==='limparFuncionarios'?'func':'bonus'));
+                salvar(a, []);
             }
         }
 
-        // FUNÇÕES DE EXPORTAÇÃO PERMANECEM IGUAIS ÀS DO CÓDIGO 2...
+        // Lógica de Arrastar Pop-up
+        const dragItem = document.querySelector("#pop-drag"), containerPop = document.querySelector("#pop-bonificados");
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        dragItem.addEventListener("mousedown", (e) => { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; active = true; });
+        document.addEventListener("mouseup", () => active = false);
+        document.addEventListener("mousemove", (e) => {
+            if (active) {
+                e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY;
+                xOffset = currentX; yOffset = currentY;
+                containerPop.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            }
+        });
+
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-            const mes = document.getElementById('sel-mes-referencia').value;
-            const ano = document.getElementById('sel-ano-referencia').value;
-            const totalMoi = fmt(empresas.reduce((a, b) => a + b.valor, 0));
-            const totalDias = document.getElementById('esp-total-dias').innerText;
-            const valorDia = document.getElementById('esp-valor-dia').innerText;
-            const totalFuncs = document.getElementById('esp-total-funcs').innerText;
-
-            doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
-            doc.text("Coordenadoria de Execução Penal da Região Noroeste do Estado", 148.5, 17, { align: "center" });
-            doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
-            doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setFontSize(12); doc.setTextColor(255, 255, 255);
-            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
-            doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.setFont("helvetica", "bold");
-            doc.text(`TOTAL M.O.I: R$ ${totalMoi}  |  TOTAL DIAS: ${totalDias}  |  VALOR DIA: R$ ${valorDia}  |  TOTAL FUNCIONÁRIOS: ${totalFuncs}`, 14, 44);
-
-            const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
-            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: bodyRateio, startY: 50, theme: 'grid', styles: { fontSize: 8.5 }, headStyles: { fillColor: [45, 147, 68] } });
-            
-            let currentY = doc.lastAutoTable.finalY + 20;
-            const hoje = new Date();
-            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`Bauru, ${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}.`, 148.5, currentY, { align: 'center' });
+            const mes = document.getElementById('sel-mes-referencia').value, ano = document.getElementById('sel-ano-referencia').value;
+            doc.setFontSize(12); doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 15, { align: "center" });
+            doc.setFillColor(45, 147, 68); doc.rect(14, 25, 269, 10, 'F');
+            doc.setTextColor(255); doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 31.5);
+            doc.setTextColor(0); doc.setFontSize(10);
+            const resumo = `MOI: R$ ${document.getElementById('esp-total-moi').innerText} | Dias: ${document.getElementById('esp-total-dias').innerText} | Val/Dia: R$ ${document.getElementById('esp-valor-dia').innerText} | Funcs: ${document.getElementById('esp-total-funcs').innerText}`;
+            doc.text(resumo, 14, 42);
+            const body = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
+            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: body, startY: 46, theme: 'grid', styles: { fontSize: 8 } });
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
-            const mes = document.getElementById('sel-mes-referencia').value;
-            const ano = document.getElementById('sel-ano-referencia').value;
-            const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
+            const m = document.getElementById('sel-mes-referencia').value, a = document.getElementById('sel-ano-referencia').value;
+            const ws_data = [["Matrícula", "Nome", "Setor", "Dias", "Total Final"]];
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
-            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Funcionários"); XLSX.writeFile(wb, `Lista_Pagamentos_${mes}_${ano}.xlsx`);
+            const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Rateio");
+            XLSX.writeFile(wb, `Rateio_${m}_${a}.xlsx`);
         }
 
         window.onload = carregar;
