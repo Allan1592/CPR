@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/dots/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         :root { --verde: #2d9344; --laranja: #e67e22; --azul: #3498db; --vermelho: #d32f2f; --roxo: #8e44ad; --cinza-claro: #f4f7f6; }
@@ -19,6 +19,7 @@
         .tela { display: none; background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .active { display: block; }
         
+        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
         @media (max-width: 992px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 500px) { .dashboard-grid { grid-template-columns: 1fr; } }
@@ -27,7 +28,7 @@
         .btn-dash i { font-size: 3rem; margin-bottom: 15px; }
         .btn-dash:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
         
-        /* JANELA DE BONIFICADOS MAIS LARGA */
+        /* Pop-up Bonificados Largo */
         #pop-bonificados { 
             display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
             width: 95%; max-width: 850px; background: white; border-radius: 8px; 
@@ -39,32 +40,32 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .resumo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card-resumo { background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; }
-        .card-resumo small { color: #666; display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
-        .card-resumo b { font-size: 1.3rem; color: var(--azul); }
+        /* Tabelas e Alinhamento */
         .table-wrapper { width: 100%; max-height: 400px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; }
         thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; padding: 12px; border-bottom: 2px solid #dee2e6; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
         .text-center { text-align: center !important; }
         
+        /* Forçar botões lado a lado */
+        .acoes-flex { display: flex; justify-content: center; gap: 12px; white-space: nowrap; }
+
         textarea { width: 100%; height: 80px; border: 1px solid #ccc; border-radius: 6px; padding: 12px; margin-bottom: 10px; font-family: inherit; resize: vertical; box-sizing: border-box; display: block; }
-        
         .btn-std { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; }
-        footer { text-align: center; padding: 25px; color: #777; font-size: 0.9rem; margin-top: auto; }
-        
+        .btn-icon { border: none; background: none; cursor: pointer; font-size: 1.2rem; padding: 5px; transition: 0.2s; }
+        .btn-icon:hover { transform: scale(1.2); }
+
+        /* Modal e Toast */
         #modal-edicao { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4000; justify-content:center; align-items:center; }
         .modal-content { background:white; padding:25px; border-radius:8px; width:350px; }
         .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast { background: #333; color: white; padding: 12px 20px; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; animation: slideIn 0.3s ease forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         .input-manual-group { display: flex; gap: 8px; margin-bottom: 12px; }
         .input-manual-group input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; font-size: 0.9rem; }
+        footer { text-align: center; padding: 25px; color: #777; font-size: 0.9rem; margin-top: auto; }
     </style>
 </head>
 <body>
@@ -73,7 +74,7 @@
 
     <div id="main-header" class="header-container">
         <img src="icone.png" alt="Logo CPP II Bauru" class="logo-placeholder">
-        <h1 style="margin:0; color:#2c3e50;">GESTÃO DE RATEIO</h1>
+        <h1 style="margin:0; color:#2c3e50;">SISTEMA DE RATEIO</h1>
         <p style="color:#666;">CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru</p>
     </div>
 
@@ -130,11 +131,11 @@
         <section id="tela-pagamentos" class="tela">
             <button onclick="navegar('tela-menu')" class="btn-std" style="background:#666;">← Menu</button>
             <h3 id="titulo-pagamentos" style="color:var(--azul)">Relatório de Pagamentos</h3>
-            <div class="resumo-grid">
-                <div class="card-resumo"><small>Total M.O.I</small><b id="esp-total-moi" style="color:var(--verde)">0,00</b></div>
-                <div class="card-resumo"><small>Total Dias</small><b id="esp-total-dias">0</b></div>
-                <div class="card-resumo"><small>Valor Dia</small><b id="esp-valor-dia" style="color:var(--laranja)">0,00</b></div>
-                <div class="card-resumo"><small>Total Funcionários</small><b id="esp-total-funcs" style="color:var(--azul)">0</b></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background:#fdfdfd; border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;"><small style="color:#666; font-weight:bold; font-size:0.75rem;">TOTAL M.O.I</small><br><b id="esp-total-moi" style="font-size:1.3rem; color:var(--verde)">0,00</b></div>
+                <div style="background:#fdfdfd; border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;"><small style="color:#666; font-weight:bold; font-size:0.75rem;">TOTAL DIAS</small><br><b id="esp-total-dias" style="font-size:1.3rem; color:var(--azul)">0</b></div>
+                <div style="background:#fdfdfd; border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;"><small style="color:#666; font-weight:bold; font-size:0.75rem;">VALOR DIA</small><br><b id="esp-valor-dia" style="font-size:1.3rem; color:var(--laranja)">0,00</b></div>
+                <div style="background:#fdfdfd; border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;"><small style="color:#666; font-weight:bold; font-size:0.75rem;">FUNCIONÁRIOS</small><br><b id="esp-total-funcs" style="font-size:1.3rem; color:var(--azul)">0</b></div>
             </div>
             <div style="text-align: right; margin-bottom: 15px; display: flex; justify-content: flex-end; gap: 10px;">
                 <button onclick="exportarExcel()" class="btn-std" style="background:#1d6f42;"><i class="fa fa-file-excel"></i> Excel</button>
@@ -189,8 +190,7 @@
             toast.className = 'toast';
             const cor = tipo === 'erro' ? 'var(--vermelho)' : (tipo === 'info' ? 'var(--roxo)' : 'var(--verde)');
             toast.style.borderLeft = `5px solid ${cor}`;
-            const icone = tipo === 'erro' ? 'exclamation-circle' : 'check-circle';
-            toast.innerHTML = `<i class="fa fa-${icone}" style="color:${cor}"></i> ${msg}`;
+            toast.innerHTML = `<i class="fa fa-${tipo === 'erro' ? 'exclamation-circle' : 'check-circle'}" style="color:${cor}"></i> ${msg}`;
             container.appendChild(toast);
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 3000);
         }
@@ -204,8 +204,9 @@
 
         function abrirPopBonificados() { document.getElementById('pop-bonificados').style.display = 'block'; renderBonus(); }
         function fecharPopBonificados() { document.getElementById('pop-bonificados').style.display = 'none'; }
+        function fmt(v) { return (Math.round(v * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
-        function fmt(valor) { return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        async function salvar(a, d) { return fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
 
         function importar(tipo) {
             if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return avisar("Selecione o Mês!", "erro");
@@ -230,37 +231,37 @@
             else { renderBonus(); salvar('salvarBonificados', bonificados); }
             
             document.getElementById(idCampo).value = '';
-            avisar("Dados processados!");
+            avisar("Dados processados e salvos!");
         }
 
         function adicionarManualBonus() {
             const m = document.getElementById('add-bonus-mat').value.trim();
             const n = document.getElementById('add-bonus-nome').value.trim().toUpperCase();
             const s = document.getElementById('add-bonus-setor').value.trim().toUpperCase();
-            if(!m || !n) return avisar("Preencha Matrícula e Nome!", "erro");
+            if(!m || !n) return avisar("Matrícula e Nome obrigatórios!", "erro");
             bonificados.push({ matricula: m, nome: n, setor: s || 'GERAL' });
             renderBonus();
             salvar('salvarBonificados', bonificados);
             ['add-bonus-mat','add-bonus-nome','add-bonus-setor'].forEach(i => document.getElementById(i).value='');
-            avisar("Bonificado adicionado!");
+            avisar("Salvo na Planilha!");
         }
 
         function renderBonus() {
             const tb = document.querySelector('#tab-bonus tbody'); tb.innerHTML = '';
             bonificados.forEach((b, i) => { 
-                tb.innerHTML += `<tr><td class="text-center">${b.matricula}</td><td>${b.nome}</td><td class="text-center">${b.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('bonus',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('bonus',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
+                tb.innerHTML += `<tr><td class="text-center">${b.matricula}</td><td>${b.nome}</td><td class="text-center">${b.setor}</td><td class="acoes-flex"><button class="btn-icon" onclick="abrirEdicao('bonus',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('bonus',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
             });
         }
 
         function renderEmp() {
             const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
-            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+            empresas.forEach((e, i) => { total += e.valor; tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="acoes-flex"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
             document.getElementById('total-emp-display').innerText = fmt(total);
         }
 
         function renderFunc() {
             const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
-            funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
+            funcionarios.forEach((f, i) => { tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="acoes-flex"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; });
         }
 
         function calcular() {
@@ -275,11 +276,11 @@
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
             document.getElementById('esp-total-funcs').innerText = funcionarios.length;
             const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
-            let acumuladoArredondado = 0;
-            funcionarios.forEach((f, index) => {
-                let totalFunc = index === funcionarios.length - 1 ? Math.round((bruto - acumuladoArredondado) * 100) / 100 : Math.round((f.dias * valorDia) * 100) / 100;
-                acumuladoArredondado += totalFunc;
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
+            let acumulado = 0;
+            funcionarios.forEach((f, idx) => {
+                let total = idx === funcionarios.length - 1 ? Math.round((bruto - acumulado) * 100) / 100 : Math.round((f.dias * valorDia) * 100) / 100;
+                acumulado += total;
+                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(total)}</b></td></tr>`;
             });
         }
 
@@ -295,40 +296,38 @@
             if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
             else if(tipoEditando === 'func') { funcionarios[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value.toUpperCase(); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
             else { bonificados[idEditando].nome = document.getElementById('ed-1').value.toUpperCase(); bonificados[idEditando].setor = document.getElementById('ed-2').value.toUpperCase(); renderBonus(); salvar('salvarBonificados', bonificados); }
-            fecharModal(); avisar("Registro atualizado!");
+            fecharModal(); avisar("Atualizado!");
         }
 
         function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
         
         function excluir(t, i) { 
-            if(confirm("Excluir este registro?")) { 
+            if(confirm("Excluir registro?")) { 
                 if(t === 'emp') { empresas.splice(i,1); renderEmp(); salvar('salvarEmpresas', empresas); }
                 else if(t === 'func') { funcionarios.splice(i,1); renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
                 else { bonificados.splice(i,1); renderBonus(); salvar('salvarBonificados', bonificados); }
-                avisar("Registro removido!", "erro");
+                avisar("Removido!", "erro");
             } 
         }
 
-        async function salvar(a, d) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
-        
         async function carregar() { 
             try { 
                 const res = await fetch(URL_SCRIPT); const d = await res.json(); 
                 empresas = d.empresas || []; funcionarios = d.funcionarios || []; bonificados = d.bonificados || [];
                 renderEmp(); renderFunc(); renderBonus();
-            } catch(e) { avisar("Erro de sincronização.", "erro"); } 
+            } catch(e) { avisar("Erro ao carregar dados.", "erro"); } 
         }
 
         async function limparRemoto(a) { 
-            if(confirm("Limpar esta seção?")) { 
+            if(confirm("Limpar seção?")) { 
                 if(a === 'limparEmpresas') { empresas = []; renderEmp(); }
                 else if(a === 'limparFuncionarios') { funcionarios = []; renderFunc(); }
                 else { bonificados = []; renderBonus(); }
-                salvar(a, []); avisar("Dados limpos!", "erro");
+                salvar(a, []); avisar("Seção limpa!", "erro");
             } 
         }
 
-        // Sistema de Arrastar Janela
+        // Arrastar Janela
         const dragItem = document.querySelector("#pop-drag");
         const containerPop = document.querySelector("#pop-bonificados");
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
@@ -342,10 +341,9 @@
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
             doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 148.5, 34.5, { align: "center" });
-            const bodyRateio = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
-            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: bodyRateio, startY: 50, theme: 'grid', headStyles: { fillColor: [45, 147, 68] } });
+            const body = Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
+            doc.autoTable({ head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], body: body, startY: 50, theme: 'grid', headStyles: { fillColor: [45, 147, 68] } });
             doc.save(`Rateio_${mes}_${ano}.pdf`);
-            avisar("PDF gerado!");
         }
 
         function exportarExcel() {
@@ -355,7 +353,6 @@
             Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Pagamentos"); XLSX.writeFile(wb, `Rateio_${mes}_${ano}.xlsx`);
-            avisar("Excel exportado!");
         }
 
         window.onload = carregar;
