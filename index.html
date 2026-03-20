@@ -120,69 +120,138 @@
         </section>
     </div>
 
-    <div id="modal-edicao"><div class="modal-content"><h4 style="margin-top:0">Editar Registro</h4><div id="corpo-modal"></div><div style="margin-top:20px; text-align:right;"><button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button> <button onclick="fecharModal()" class="btn-std" style="background:#666">Sair</button></div></div></div>
+    <div id="modal-edicao">
+        <div class="modal-content">
+            <h4 style="margin-top:0">Editar Registro</h4>
+            <div id="corpo-modal"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button onclick="salvarEdicao()" class="btn-std" style="background:var(--verde)">Salvar</button>
+                <button onclick="fecharModal()" class="btn-std" style="background:#666">Sair</button>
+            </div>
+        </div>
+    </div>
 
     <footer>Idealizado por: <b>Allan Ramos | Policial Penal | CPP II de Bauru</b></footer>
 
     <script>
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwFqc5mT8DiWQHDJfoA1g1sFhDdai8zznpz9pIRN2sodNOo3pNBq4nAIN2VnZr-bzrw/exec";
-        let empresas = [], funcionarios = [], idEditando = null, tipoEditando = '';
+        let empresas = [];
+        let funcionarios = [];
+        let idEditando = null;
+        let tipoEditando = '';
 
         function navegar(id) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('main-header').style.display = (id === 'tela-menu' ? 'block' : 'none');
-            if(id === 'tela-pagamentos') calcular();
+            if (id === 'tela-pagamentos') calcular();
         }
 
         function fmt(valor) {
-            return (Math.round(valor * 100) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return (Math.round(Number(valor || 0) * 100) / 100).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         function importar(tipo) {
-            if(tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) return alert("Selecione o Mês!");
-            const txt = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value.trim();
-            if(!txt) return;
+            if (tipo === 'emp' && !document.getElementById('sel-mes-referencia').value) {
+                alert("Selecione o Mês!");
+                return;
+            }
+
+            const campo = document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs');
+            const txt = campo.value.trim();
+            if (!txt) return;
 
             txt.split('\n').forEach(linha => {
-                const c = linha.split('\t');
+                const c = linha.split('\t').map(item => item.trim());
                 if (c.length < 2) return;
 
-                if(tipo === 'emp') {
-                    // Ignora cabeçalhos comuns
-                    if(c[0].toUpperCase().includes("Nº") || c[0].toUpperCase().includes("EMPRESA") || c[0].toUpperCase().includes("TOTAL")) return;
-                    
-                    // Identifica se a 1ª coluna é número (índice do Excel) e ajusta a leitura
-                    let nome = isNaN(c[0].trim()) ? c[0].trim() : (c[1] ? c[1].trim() : "Empresa S/N");
-                    let valorTexto = isNaN(c[0].trim()) ? c[1] : (c[2] || c[1]);
-                    
-                    let v = valorTexto.replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.').trim();
-                    let valorNum = parseFloat(v);
-                    
-                    if(!isNaN(valorNum)) empresas.push({ nome: nome, valor: valorNum });
-                } else if(tipo === 'func' && c.length >= 3) {
-                    if(c[0].toUpperCase().includes("MATRÍCULA")) return;
-                    funcionarios.push({ matricula: c[0].trim(), nome: c[1].trim(), dias: parseFloat(c[2].replace(',', '.')) || 0, setor: (c[3] || 'Geral').trim() });
+                if (tipo === 'emp') {
+                    const primeiraColuna = (c[0] || '').toUpperCase();
+                    if (
+                        primeiraColuna.includes('Nº') ||
+                        primeiraColuna.includes('EMPRESA') ||
+                        primeiraColuna.includes('TOTAL')
+                    ) return;
+
+                    const primeiraEhNumero = !isNaN(c[0]) && c[0] !== '';
+                    const nome = primeiraEhNumero ? (c[1] || 'Empresa S/N') : c[0];
+                    const valorTexto = primeiraEhNumero ? (c[2] || c[1] || '') : (c[1] || '');
+                    const valorLimpo = valorTexto
+                        .replace('R$', '')
+                        .replace(/\s/g, '')
+                        .replace(/\./g, '')
+                        .replace(',', '.')
+                        .trim();
+
+                    const valorNum = parseFloat(valorLimpo);
+                    if (!isNaN(valorNum)) {
+                        empresas.push({ nome, valor: valorNum });
+                    }
+                }
+
+                if (tipo === 'func' && c.length >= 3) {
+                    if ((c[0] || '').toUpperCase().includes('MATRÍCULA')) return;
+                    funcionarios.push({
+                        matricula: c[0],
+                        nome: c[1] || '',
+                        dias: parseFloat((c[2] || '0').replace(',', '.')) || 0,
+                        setor: c[3] || 'Geral'
+                    });
                 }
             });
-            
-            tipo === 'emp' ? (renderEmp(), salvar('salvarEmpresas', empresas)) : (renderFunc(), salvar('salvarTodosFuncionarios', funcionarios));
-            document.getElementById(tipo === 'emp' ? 'txt-empresas' : 'txt-funcs').value = '';
+
+            if (tipo === 'emp') {
+                renderEmp();
+                salvar('salvarEmpresas', empresas);
+            } else {
+                renderFunc();
+                salvar('salvarTodosFuncionarios', funcionarios);
+            }
+
+            campo.value = '';
         }
 
         function renderEmp() {
-            const tb = document.querySelector('#tab-empresas tbody'); tb.innerHTML = ''; let total = 0;
-            empresas.forEach((e, i) => { 
-                total += e.valor; 
-                tb.innerHTML += `<tr><td class="text-center">${i+1}</td><td>${e.nome}</td><td class="text-center">${fmt(e.valor)}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
+            const tb = document.querySelector('#tab-empresas tbody');
+            tb.innerHTML = '';
+            let total = 0;
+
+            empresas.forEach((e, i) => {
+                total += Number(e.valor) || 0;
+                tb.innerHTML += `
+                    <tr>
+                        <td class="text-center">${i + 1}</td>
+                        <td>${e.nome}</td>
+                        <td class="text-center">${fmt(e.valor)}</td>
+                        <td class="text-center">
+                            <button class="btn-icon" onclick="abrirEdicao('emp',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
+                            <button class="btn-icon" onclick="excluir('emp',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>`;
             });
+
             document.getElementById('total-emp-display').innerText = fmt(total);
         }
 
         function renderFunc() {
-            const tb = document.querySelector('#tab-funcs tbody'); tb.innerHTML = '';
-            funcionarios.forEach((f, i) => { 
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.dias}</td><td class="text-center">${f.setor}</td><td class="text-center"><button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button><button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button></td></tr>`; 
+            const tb = document.querySelector('#tab-funcs tbody');
+            tb.innerHTML = '';
+
+            funcionarios.forEach((f, i) => {
+                tb.innerHTML += `
+                    <tr>
+                        <td class="text-center">${f.matricula}</td>
+                        <td>${f.nome}</td>
+                        <td class="text-center">${f.dias}</td>
+                        <td class="text-center">${f.setor}</td>
+                        <td class="text-center">
+                            <button class="btn-icon" onclick="abrirEdicao('func',${i})" style="color:var(--laranja)"><i class="fa fa-edit"></i></button>
+                            <button class="btn-icon" onclick="excluir('func',${i})" style="color:var(--vermelho)"><i class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>`;
             });
         }
 
@@ -190,83 +259,211 @@
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
             document.getElementById('titulo-pagamentos').innerText = `Relatório de Pagamentos - ${mes} / ${ano}`;
-            
-            const bruto = Math.round(empresas.reduce((a, b) => a + b.valor, 0) * 100) / 100;
-            const totalDias = funcionarios.reduce((a, b) => a + b.dias, 0);
+
+            const bruto = Math.round(empresas.reduce((a, b) => a + (Number(b.valor) || 0), 0) * 100) / 100;
+            const totalDias = funcionarios.reduce((a, b) => a + (Number(b.dias) || 0), 0);
             const valorDia = totalDias > 0 ? bruto / totalDias : 0;
-            
+
             document.getElementById('esp-total-moi').innerText = fmt(bruto);
             document.getElementById('esp-total-dias').innerText = totalDias;
             document.getElementById('esp-valor-dia').innerText = fmt(valorDia);
             document.getElementById('esp-total-funcs').innerText = funcionarios.length;
-            
-            const tb = document.querySelector('#tab-rateio tbody'); tb.innerHTML = '';
+
+            const tb = document.querySelector('#tab-rateio tbody');
+            tb.innerHTML = '';
+
             let acumulado = 0;
             funcionarios.forEach((f, index) => {
                 let totalFunc;
                 if (index === funcionarios.length - 1) {
                     totalFunc = Math.round((bruto - acumulado) * 100) / 100;
                 } else {
-                    totalFunc = Math.round((f.dias * valorDia) * 100) / 100;
+                    totalFunc = Math.round(((Number(f.dias) || 0) * valorDia) * 100) / 100;
                     acumulado += totalFunc;
                 }
-                tb.innerHTML += `<tr><td class="text-center">${f.matricula}</td><td>${f.nome}</td><td class="text-center">${f.setor}</td><td class="text-center">${f.dias}</td><td class="text-center"><b>${fmt(totalFunc)}</b></td></tr>`;
+
+                tb.innerHTML += `
+                    <tr>
+                        <td class="text-center">${f.matricula}</td>
+                        <td>${f.nome}</td>
+                        <td class="text-center">${f.setor}</td>
+                        <td class="text-center">${f.dias}</td>
+                        <td class="text-center"><b>${fmt(totalFunc)}</b></td>
+                    </tr>`;
             });
         }
 
         function abrirEdicao(t, i) {
-            tipoEditando = t; idEditando = i; const c = document.getElementById('corpo-modal');
-            if(t==='emp') c.innerHTML = `Empresa: <input id="ed-1" value="${empresas[i].nome}"> Valor: <input id="ed-2" type="number" step="0.01" value="${empresas[i].valor}">`;
-            else c.innerHTML = `Nome: <input id="ed-1" value="${funcionarios[i].nome}"> Dias: <input id="ed-2" type="number" step="0.5" value="${funcionarios[i].dias}"> Setor: <input id="ed-3" value="${funcionarios[i].setor}">`;
+            tipoEditando = t;
+            idEditando = i;
+            const c = document.getElementById('corpo-modal');
+
+            if (t === 'emp') {
+                c.innerHTML = `
+                    Empresa:
+                    <input id="ed-1" value="${empresas[i].nome}">
+                    Valor:
+                    <input id="ed-2" type="number" step="0.01" value="${empresas[i].valor}">
+                `;
+            } else {
+                c.innerHTML = `
+                    Nome:
+                    <input id="ed-1" value="${funcionarios[i].nome}">
+                    Dias:
+                    <input id="ed-2" type="number" step="0.5" value="${funcionarios[i].dias}">
+                    Setor:
+                    <input id="ed-3" value="${funcionarios[i].setor}">
+                `;
+            }
+
             document.getElementById('modal-edicao').style.display = 'flex';
         }
 
         function salvarEdicao() {
-            if(tipoEditando === 'emp') { empresas[idEditando].nome = document.getElementById('ed-1').value; empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0; renderEmp(); salvar('salvarEmpresas', empresas); }
-            else { funcionarios[idEditando].nome = document.getElementById('ed-1').value; funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0; funcionarios[idEditando].setor = document.getElementById('ed-3').value; renderFunc(); salvar('salvarTodosFuncionarios', funcionarios); }
+            if (tipoEditando === 'emp') {
+                empresas[idEditando].nome = document.getElementById('ed-1').value.trim();
+                empresas[idEditando].valor = parseFloat(document.getElementById('ed-2').value) || 0;
+                renderEmp();
+                salvar('salvarEmpresas', empresas);
+            } else {
+                funcionarios[idEditando].nome = document.getElementById('ed-1').value.trim();
+                funcionarios[idEditando].dias = parseFloat(document.getElementById('ed-2').value) || 0;
+                funcionarios[idEditando].setor = document.getElementById('ed-3').value.trim();
+                renderFunc();
+                salvar('salvarTodosFuncionarios', funcionarios);
+            }
+
             fecharModal();
         }
 
-        function fecharModal() { document.getElementById('modal-edicao').style.display = 'none'; }
-        function excluir(t, i) { if(confirm("Excluir?")) { t === 'emp' ? (empresas.splice(i,1), renderEmp(), salvar('salvarEmpresas', empresas)) : (funcionarios.splice(i,1), renderFunc(), salvar('salvarTodosFuncionarios', funcionarios)); } }
-        async function salvar(a, d) { fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ acao: a, dados: d }) }); }
-        async function carregar() { try { const res = await fetch(URL_SCRIPT); const d = await res.json(); empresas = d.empresas || []; funcionarios = d.funcionarios || []; renderEmp(); renderFunc(); } catch(e) {} }
-        async function limparRemoto(a) { if(confirm("Limpar?")) { a === 'limparEmpresas' ? (empresas = [], renderEmp()) : (funcionarios = [], renderFunc()); salvar(a, []); } }
+        function fecharModal() {
+            document.getElementById('modal-edicao').style.display = 'none';
+        }
+
+        function excluir(t, i) {
+            if (!confirm("Excluir?")) return;
+
+            if (t === 'emp') {
+                empresas.splice(i, 1);
+                renderEmp();
+                salvar('salvarEmpresas', empresas);
+            } else {
+                funcionarios.splice(i, 1);
+                renderFunc();
+                salvar('salvarTodosFuncionarios', funcionarios);
+            }
+        }
+
+        async function salvar(acao, dados) {
+            try {
+                const res = await fetch(URL_SCRIPT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify({ acao, dados })
+                });
+
+                const texto = await res.text();
+                try {
+                    const json = JSON.parse(texto);
+                    if (json.sucesso === false) {
+                        console.error('Erro ao salvar:', json.erro);
+                        alert('Erro ao salvar: ' + json.erro);
+                    }
+                } catch (_) {
+                    console.warn('Resposta não JSON no salvar:', texto);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Falha de comunicação ao salvar os dados.');
+            }
+        }
+
+        async function carregar() {
+            try {
+                const res = await fetch(URL_SCRIPT);
+                const d = await res.json();
+
+                if (d.erro) {
+                    alert('Erro ao carregar: ' + d.erro);
+                    return;
+                }
+
+                empresas = Array.isArray(d.empresas) ? d.empresas : [];
+                funcionarios = Array.isArray(d.funcionarios) ? d.funcionarios : [];
+
+                renderEmp();
+                renderFunc();
+            } catch (e) {
+                console.error(e);
+                alert('Falha ao carregar os dados.');
+            }
+        }
+
+        async function limparRemoto(acao) {
+            if (!confirm("Limpar?")) return;
+
+            if (acao === 'limparEmpresas') {
+                empresas = [];
+                renderEmp();
+            } else {
+                funcionarios = [];
+                renderFunc();
+            }
+
+            await salvar(acao, []);
+        }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const mes = document.getElementById('sel-mes-referencia').value;
             const ano = document.getElementById('sel-ano-referencia').value;
-            
-            doc.setFontSize(12); doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
-            doc.text("CPP II \"Dr. Eduardo de Oliveira Vianna\" de Bauru", 148.5, 22, { align: "center" });
-            
-            doc.setFillColor(45, 147, 68); doc.rect(14, 28, 269, 10, 'F');
-            doc.setTextColor(255, 255, 255); doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5); 
-            
-            doc.setTextColor(0, 0, 0); doc.setFontSize(10);
+
+            doc.setFontSize(12);
+            doc.text("Secretaria da Administração Penitenciária", 148.5, 12, { align: "center" });
+            doc.text('CPP II "Dr. Eduardo de Oliveira Vianna" de Bauru', 148.5, 22, { align: "center" });
+
+            doc.setFillColor(45, 147, 68);
+            doc.rect(14, 28, 269, 10, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.text(`Relatório de Pagamentos - ${mes} / ${ano}`, 18, 34.5);
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
             doc.text(`TOTAL M.O.I: R$ ${document.getElementById('total-emp-display').innerText}`, 14, 44);
-            
-            doc.autoTable({ 
-                head: [['Nº', 'Empresas', 'Valor']], body: empresas.map((e, idx) => [idx+1, e.nome, fmt(e.valor)]), startY: 48, theme: 'grid'
+
+            doc.autoTable({
+                head: [['Nº', 'Empresas', 'Valor']],
+                body: empresas.map((e, idx) => [idx + 1, e.nome, fmt(e.valor)]),
+                startY: 48,
+                theme: 'grid'
             });
 
-            doc.autoTable({ 
-                head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']], 
-                body: Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.innerText)),
-                startY: doc.lastAutoTable.finalY + 10, theme: 'grid', headStyles: { fillColor: [45, 147, 68] }
+            doc.autoTable({
+                head: [['Matrícula', 'Nome', 'Setor', 'Dias', 'Total Final']],
+                body: Array.from(document.querySelectorAll("#tab-rateio tbody tr")).map(tr =>
+                    Array.from(tr.querySelectorAll("td")).map(td => td.innerText)
+                ),
+                startY: doc.lastAutoTable.finalY + 10,
+                theme: 'grid',
+                headStyles: { fillColor: [45, 147, 68] }
             });
 
             doc.save(`Rateio_${mes}_${ano}.pdf`);
         }
 
         function exportarExcel() {
-            const ws_data = [ ["Matrícula", "Nome", "Setor", "Dias", "Total Final"] ];
-            Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText)));
-            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const ws_data = [["Matrícula", "Nome", "Setor", "Dias", "Total Final"]];
+            Array.from(document.querySelectorAll("#tab-rateio tbody tr")).forEach(tr => {
+                ws_data.push(Array.from(tr.querySelectorAll("td")).map(td => td.innerText));
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Rateio");
-            XLSX.writeFile(wb, `Rateio.xlsx`);
+            XLSX.writeFile(wb, "Rateio.xlsx");
         }
 
         window.onload = carregar;
